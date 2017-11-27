@@ -135,15 +135,6 @@ def update_develop(db):
         return {'result':'error'}
     return {'result':'ok'}
 
-def update_master(db):
-    mongo = Mongo(db)
-    if not mongo.copydb('10.89.14.142'):
-        return {'result':'error'}
-    up = Update('127.0.0.1', db)
-    if not up.update('master'):
-        return {'result':'error'}
-    return {'result':'ok'}
-
 CMD = {'count_data':count_data,
         'load_group':load_group,
         'load_label':load_label,
@@ -153,7 +144,6 @@ CMD = {'count_data':count_data,
         'commit':commit,
         'create':create,
         'update_develop':update_develop,
-        'update_master':update_master,
         }
 #DB = ['bank', 'bank_ccb', 'bank_psbc', 'suning_biu', 'ecovacs', 'ule']
 
