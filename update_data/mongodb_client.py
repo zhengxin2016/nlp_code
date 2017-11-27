@@ -179,7 +179,7 @@ class ReadData():
                     data['emotion_url'][0], 'media':data['media'][0],
                     'timeout':data['timeout'][0]}
         except Exception:
-            return {'answer':None}
+            return {'answer':None, 'emotion':None, 'media':None, 'timeout':None}
 
     def common_interaction_questions(self, question='', max_num = 10):
         core_name = 'zx_common_interaction'
