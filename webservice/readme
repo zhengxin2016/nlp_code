@@ -21,5 +21,6 @@ ip:port/commit/db/collection
     data = {"result":{"cmd":"create/update/delete", "ids":[...]}}
 ip:port/create/db/collection
 ------------------------------
-ip:port/update/db
+ip:port/update_develop/db
+ip:port/update_master/db
 ------------------------------
