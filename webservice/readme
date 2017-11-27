@@ -1,0 +1,25 @@
+
+
+ip:port/cmd/db/collection/query
+cmd = {count_data, load_group, load_label, load_data, search_data}
+-----------------------------
+ip:port/count_data/bank/qa/{}
+ip:port/load_group/bank/qa/{}
+ip:port/load_label/bank/qa/{"group":"xxx"}
+ip:port/load_data/bank/qa/{"group":"xxx", "label":"xxx"}
+ip:port/search_data/bank/qa/{"group":"xxx", "label":"xxx"}
+-----------------------------
+ip:port/read/count_data/bank/qa/{}
+ip:port/read/load_group/bank/qa/{}
+ip:port/read/load_label/bank/qa/{"group":"xxx"}
+ip:port/read/load_data/bank/qa/{"group":"xxx", "label":"xxx"}
+ip:port/read/search_data/bank/qa/{"group":"xxx", "label":"xxx"}
+----------------------------
+ip:port/store/db/collection
+    data = {"result":{"cmd":"create/update/delete", ...}}
+ip:port/commit/db/collection
+    data = {"result":{"cmd":"create/update/delete", "ids":[...]}}
+ip:port/create/db/collection
+------------------------------
+ip:port/update/db
+------------------------------
