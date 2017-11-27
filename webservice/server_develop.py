@@ -177,6 +177,7 @@ def cmd_4(cmd='', db='', collection='', query=''):
 
 @bottle.route('/:cmd/:db/:collection', method=['GET','POST'])
 def cmd_3(cmd='', db='', collection=''):
+    db = db + '_test'
     if cmd == 'store_data':
         #if db not in DB:
         #    return {'result':'db name error'}
