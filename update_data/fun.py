@@ -36,13 +36,8 @@ def question_pro(q):
 
 def questions_pro(qs):
     for i in range(len(qs)):
-        qs[i] = qs[i].replace(',', '')
-        qs[i] = qs[i].replace('?', '')
-        qs[i] = qs[i].replace('!', '')
-        qs[i] = qs[i].replace('，', '')
-        qs[i] = qs[i].replace('？', '')
-        qs[i] = qs[i].replace('！', '')
-        qs[i] = qs[i].replace('。', '')
+        qs[i] = question_pro(qs[i])
+        qs[i] = qs[i].lower()
     return qs
 
 #带处理'/'的split()
