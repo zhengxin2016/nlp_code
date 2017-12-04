@@ -10,7 +10,7 @@ from update_solr import Update
 def count_data(db, collection, query):
     mongo = Mongo(db)
     data = mongo.count(collection)
-    result = json.dumps({'result':data}, ensure_ascii=False)
+    result = json.dumps({'result':data}, ensure_ascii=False, sort_keys=True)
     return result.encode('utf-8')
 
 def load_group(db, collection, query):
@@ -19,7 +19,7 @@ def load_group(db, collection, query):
         data = mongo.load_dialogue_business() 
     else:
         data = mongo.load_group(collection)
-    result = json.dumps({'result':data}, ensure_ascii=False)
+    result = json.dumps({'result':data}, ensure_ascii=False, sort_keys=True)
     return result.encode('utf-8')
 
 def load_label(db, collection, query):
@@ -40,7 +40,7 @@ def load_label(db, collection, query):
         data = mongo.load_dialogue_intention(group)
     else:
         data = mongo.load_label(collection, group)
-    result = json.dumps({'result':data}, ensure_ascii=False)
+    result = json.dumps({'result':data}, ensure_ascii=False, sort_keys=True)
     return result.encode('utf-8')
 
 def load_data(db, collection, query):
@@ -57,7 +57,7 @@ def load_data(db, collection, query):
         data = mongo.load_dialogue_data(query)
     else:
         data = mongo.load_data(collection, query)
-    result = json.dumps({'result':data}, ensure_ascii=False)
+    result = json.dumps({'result':data}, ensure_ascii=False, sort_keys=True)
     return result.encode('utf-8')
 
 def store_data(db, collection, query):
@@ -97,7 +97,7 @@ def search_data(db, collection, query):
         data = mongo.search_dialogue(query)
     else:
         data = mongo.search(collection, query)
-    result = json.dumps({'result':data}, ensure_ascii=False)
+    result = json.dumps({'result':data}, ensure_ascii=False, sort_keys=True)
     result = result.encode('utf-8')
     return result
 
