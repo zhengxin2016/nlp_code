@@ -73,6 +73,7 @@ class Qa():
             data_one.pop('equal_questions')
             for q in x['equal_questions']:
                 data_one['question'] = q
+                data_one['question_ik'] = q
                 self.solr.update_solr(data_one, self.solr_core)
 
     def update(self):

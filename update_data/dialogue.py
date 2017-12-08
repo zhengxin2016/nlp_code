@@ -96,6 +96,7 @@ class Dialogue():
                 if data_one['super_intention'] == '':
                     data_one['super_intention'] = 'null'
                 data_one['question'] = q
+                data_one['question_ik'] = q
                 self.solr.update_solr(data_one, self.solr_core)
 
     def update(self):
