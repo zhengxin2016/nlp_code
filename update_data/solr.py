@@ -72,7 +72,7 @@ class SOLR():
 
     def query_question_solr(self, core_name, question, fields, num):
         query = {
-                'q':'question:'+question,
+                'q':'question_ik:'+question,
                 'fl':fields,
                 'rows':num,
                 }

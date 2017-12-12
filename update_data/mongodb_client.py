@@ -33,7 +33,7 @@ class ReadData():
         try:
             if intention == '' or question == '':
                 return None
-            select = 'intention_str:'+intention+' AND '+'question:'+question
+            select = 'intention_str:'+intention+' AND '+'question_ik:'+question
             fields = ['question']
             core = 'zx_' + self.db_name + '_dialogue'
             data = [x['question'][0] for x in self.solr.query_solr(core,
@@ -50,7 +50,7 @@ class ReadData():
             if super_intention == '':
                 super_intention = 'null'
             select = 'super_intention_str:' + super_intention + \
-                    ' AND intention_str:'+intention+' AND question:'+question
+                    ' AND intention_str:'+intention+' AND question_ik:'+question
             fields = ['question']
             core = 'zx_' + self.db_name + '_dialogue'
             data = [x['question'][0] for x in self.solr.query_solr(core,
