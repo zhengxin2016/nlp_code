@@ -142,7 +142,7 @@ class Mongo():
                         x['_id'] = ObjectId(x['_id'])
                     x.pop('cmd')
                     #self.db[collection].delete_one({'_id':x['_id']})
-                    self.db.dialogue.delete_many(x)
+                    self.db[collection].delete_many(x)
                 elif x['cmd'] == 'update':
                     x['_id'] = ObjectId(x['_id'])
                     x.pop('cmd')
