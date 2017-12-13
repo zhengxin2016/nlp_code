@@ -68,7 +68,9 @@ class Mongo():
                     self.db.dialogue.insert(x)
                 elif x['cmd'] == 'delete':
                     x['_id'] = ObjectId(x['_id'])
-                    self.db.dialogue.delete_one({'_id':x['_id']})
+                    x.pop('cmd')
+                    #self.db.dialogue.delete_one({'_id':x['_id']})
+                    self.db.dialogue.delete(x)
                 elif x['cmd'] == 'update':
                     x['_id'] = ObjectId(x['_id'])
                     x.pop('cmd')
