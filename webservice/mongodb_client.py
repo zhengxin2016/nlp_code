@@ -70,7 +70,7 @@ class Mongo():
                     x['_id'] = ObjectId(x['_id'])
                     x.pop('cmd')
                     #self.db.dialogue.delete_one({'_id':x['_id']})
-                    self.db.dialogue.delete(x)
+                    self.db.dialogue.delete_many(x)
                 elif x['cmd'] == 'update':
                     x['_id'] = ObjectId(x['_id'])
                     x.pop('cmd')
@@ -138,9 +138,12 @@ class Mongo():
                     self.db[collection].insert(x)
                 elif x['cmd'] == 'delete':
                     x['_id'] = ObjectId(x['_id'])
-                    self.db[collection].delete_one({'_id':x['_id']})
+                    x.pop('cmd')
+                    #self.db[collection].delete_one({'_id':x['_id']})
+                    self.db.dialogue.delete_many(x)
                 elif x['cmd'] == 'update':
                     x['_id'] = ObjectId(x['_id'])
+                    x.pop('cmd')
                     self.db[collection].update_one({'_id':x['_id']}, {'$set':x})
                 else:
                     return 0
