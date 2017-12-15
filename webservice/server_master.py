@@ -10,7 +10,7 @@ from update_solr import Update
 
 def update_master(db):
     mongo = Mongo(db)
-    if not mongo.copydb('10.89.14.142'):
+    if not mongo.copydb('10.89.100.14'):
         return {'result':'error'}
     up = Update('127.0.0.1', db)
     if not up.update('master'):

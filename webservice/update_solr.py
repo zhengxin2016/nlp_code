@@ -85,6 +85,6 @@ class Update():
             return 0
 
 if __name__ == '__main__':
-    up = Update('127.0.0.1', 'test')
+    up = Update('127.0.0.1', 'bank_ccb')
     up.update('develop')
-    up.update('master')
+    #up.update('master')
