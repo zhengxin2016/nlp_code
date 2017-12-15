@@ -35,8 +35,8 @@ class Mongo():
             query = {}
             if business:
                 query['business'] = business
-            data = [x['super_intention'] +'_'+ x['intention']
-                    for x in self.db.dialogue.find(query)]
+            data = [{'label':x['super_intention'] +'_'+ x['intention'],
+                '_id':str(x['_id'])} for x in self.db.dialogue.find(query)]
             return data
         except Exception:
             return None
@@ -115,7 +115,7 @@ class Mongo():
             query = {}
             if group:
                 query['group'] = group
-            data = [x['label'] for x in
+            data = [{'label':x['label'], '_id':str(x['_id'])} for x in
                     self.db[collection].find(query)]
             return data
         except Exception:
