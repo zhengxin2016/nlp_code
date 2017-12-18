@@ -135,6 +135,7 @@ class Mongo():
         try:
             for x in data['result']:
                 if x['cmd'] == 'create':
+                    x.pop('cmd')
                     x.pop('_id')
                     self.db[collection].insert(x)
                 elif x['cmd'] == 'delete':
@@ -210,10 +211,13 @@ class Mongo():
             return 0
 
 if __name__ == '__main__':
-    mongo = Mongo('test')
+    mongo = Mongo('test_test')
     data = {'result':{'cmd':'create', 'ids':['001', '002', '003'],
         'comment':'xxx'}}
     mongo.commit('tt', data)
+    data = {'result':[{'cmd':'update', '_id':'5a376ff472ebad1d8560ea0d', 'label':'test0'}]}
+    r = mongo.store('tt', data)
+    print(r)
     '''
     mongo.create_collection('dialogue')
     data = {'result':{'cmd':'delete', 'ids':['5a09401f72ebad51948616bc']}}
