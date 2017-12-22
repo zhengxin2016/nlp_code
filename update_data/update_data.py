@@ -13,6 +13,7 @@ from sale import Sale
 from sale_2 import Sale_2
 from refuse2chat import Refuse2chat
 from interaction import Interaction
+import common
 
 class Update_data():
     def __init__(self, ip = '', port = '', db_name = ''):
@@ -105,6 +106,17 @@ def update(ip, port, mode):
         f()
     up.copy_mongodb()
 
+def update_common(ip, port):
+    print('--------common starting--------')
+    interaction = common.Interaction(ip, port)
+    repeat = common.Repeat(ip, port)
+    copydb = common.Copydb(ip, port)
+    interaction.update()
+    repeat.update()
+    copydb.copy_mongodb()
+    print('--------common ok-----------')
+
+
 if __name__ == '__main__':
     ip = '127.0.0.1'
     port = 27017
@@ -123,6 +135,8 @@ if __name__ == '__main__':
         print('########## '+m+' START ###########')
         update(ip, port, m)
         print('########## '+m+' END ###########')
+    if sys.argv[1] == 'all':
+        update_common(ip, port)
     print('(^_^) '+ str(mode) +' all ok...')
 
 
