@@ -11,7 +11,10 @@ class Mongo():
         self.db_name = db_name
         self.client = MongoClient('127.0.0.1', 27017)
         self.db = self.client[db_name]
-        self.commit_db = self.client[self.db_name[:-5]]
+        if self.db_name.endswith('_test'):
+            self.commit_db = self.client[self.db_name[:-5]]
+        else:
+            self.commit_db = self.db
     '''
     client = MongoClient('127.0.0.1', 27017)
     client.drop_database('t')

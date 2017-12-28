@@ -6,25 +6,35 @@ import bottle
 import json
 from mongodb_client import Mongo
 from update_solr import Update
+from data_backup import Data_backup, DATA_PATH
 
-
-def update_master(db):
+def update_master(db, log_id):
     mongo = Mongo(db)
     if not mongo.copydb('10.89.100.14'):
         return {'result':'error'}
     up = Update('127.0.0.1', db)
     if not up.update('master'):
         return {'result':'error'}
+    backup = Data_backup(db)
+    if not backup.data_dump(DATA_PATH, log_id):
+        return {'result':'error'}
+    return {'result':'ok'}
+
+def restore_master(db, log_id):
+    backup = Data_backup(db)
+    if not backup.data_restore(DATA_PATH, log_id):
+        return {'result':'error'}
     return {'result':'ok'}
 
 CMD = {
         'update_master':update_master,
+        'restore_master':restore_master,
         }
 
-@bottle.route('/:cmd/:db', method=['GET','POST'])
-def cmd_2(cmd='', db=''):
-    if cmd == 'update_master':
-        return CMD[cmd](db)
+@bottle.route('/:cmd/:db/:log_id', method=['GET','POST'])
+def cmd_3(cmd='', db='', log_id=''):
+    if cmd in ['update_master', 'restore_master']:
+        return CMD[cmd](db, log_id)
     else:
         return {'result':'error'}
 

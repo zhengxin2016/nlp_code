@@ -6,6 +6,7 @@ import bottle
 import json
 from mongodb_client import Mongo
 from update_solr import Update
+from data_backup import Data_backup, DATA_PATH
 
 def count_data(db, collection, query):
     mongo = Mongo(db)
@@ -102,10 +103,7 @@ def search_data(db, collection, query):
     return result
 
 def commit(db, collection, query):
-    #collections = ['dialogue', 'greeting', 'qa', 'sale']
     mongo = Mongo(db)
-    #if collection not in collections:
-    #    return {'result':'error'} 
     data = ''
     for line in bottle.request.body.readlines():
         if type(line) == bytes:
@@ -129,9 +127,18 @@ def create(db, collection, query):
         return {'result':'xxerror'} 
     return {'result':'ok'}
 
-def update_develop(db):
+def update_develop(db, log_id):
     up = Update('127.0.0.1', db)
     if not up.update('develop'):
+        return {'result':'error'}
+    backup = Data_backup(db)
+    if not backup.data_dump(DATA_PATH, log_id):
+        return {'result':'error'}
+    return {'result':'ok'}
+
+def restore_develop(db, log_id):
+    backup = Data_backup(db)
+    if not backup.data_restore(DATA_PATH, log_id):
         return {'result':'error'}
     return {'result':'ok'}
 
@@ -144,8 +151,8 @@ CMD = {'count_data':count_data,
         'commit':commit,
         'create':create,
         'update_develop':update_develop,
+        'restore_develop':restore_develop,
         }
-#DB = ['bank', 'bank_ccb', 'bank_psbc', 'suning_biu', 'ecovacs', 'ule']
 
 @bottle.route('/:mode/:cmd/:db/:collection/:query', methods=['GET', 'POST'])
 def cmd_5(mode='', cmd='', db='', collection='', query=''):
@@ -153,38 +160,20 @@ def cmd_5(mode='', cmd='', db='', collection='', query=''):
         return {'result':'error'}
     if cmd not in CMD.keys():
         return {'result':'cmd error'}
-    #if db not in DB:
-    #    return {'result':'db name error'}
     return CMD[cmd](db, collection, query)
 
 @bottle.route('/:cmd/:db/:collection/:query', methods=['GET', 'POST'])
 def cmd_4(cmd='', db='', collection='', query=''):
     if cmd not in CMD.keys():
         return {'result':'cmd error'}
-    #if db not in DB:
-    #    return {'result':'db name error'}
     return CMD[cmd](db+'_test', collection, query)
 
 @bottle.route('/:cmd/:db/:collection', method=['GET','POST'])
 def cmd_3(cmd='', db='', collection=''):
-    db = db + '_test'
-    if cmd == 'store_data':
-        #if db not in DB:
-        #    return {'result':'db name error'}
-        return CMD[cmd](db, collection, '')
-    elif cmd == 'commit':
-        #if db not in DB:
-        #    return {'result':'db name error'}
-        return CMD[cmd](db, collection, '')
-    elif cmd == 'create':
-        return CMD[cmd](db, collection, '')
-    else:
-        return {'result':'error'}
-
-@bottle.route('/:cmd/:db', method=['GET','POST'])
-def cmd_2(cmd='', db=''):
-    if cmd == 'update_develop':
-        return CMD[cmd](db)
+    if cmd in ['store_data', 'commit', 'create']:
+        return CMD[cmd](db+'_test', collection, '')
+    elif cmd in ['update_develop', 'restore_develop']:
+        return CMD[cmd](db, collection) #collection => log_id
     else:
         return {'result':'error'}
 

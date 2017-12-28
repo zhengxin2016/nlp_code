@@ -6,8 +6,6 @@ from bson.objectid import ObjectId
 from solr import SOLR
 from data_backup import Data_backup
 
-DATA_PATH = '../Data_dump'
-
 class Update():
     def __init__(self, ip, db_name):
         self.db_name = db_name
@@ -53,24 +51,17 @@ class Update():
         else:
             return 0
 
-    def data_backup(self, comments):
-        data = Data_backup(self.db_name)
-        data.data_dump(DATA_PATH, comments)
-        print('dump ok...')
-
     def update(self, server_name):
         try:
             logs = self.load_log(server_name)
             if not logs:
                 print('no update!')
                 return 1
-            comments = set()
             for log in logs:
                 if log['cmd'] == 'create':
                     self.check_solr_core(log['collection'])
                 for _id in log['ids']:
                     self.update_data(log['collection'], log['cmd'], _id)
-                comments.add(log['comment'])
                 if server_name == 'develop':
                     value = {'status':'1'}
                 elif server_name == 'master':
@@ -78,7 +69,6 @@ class Update():
                 else:
                     return 0
                 self.db.log.update_one({'_id':log['_id']}, {'$set':value})
-            self.data_backup(comments)
             return 1
         except Exception:
             print('exception')
