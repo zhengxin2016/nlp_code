@@ -8,9 +8,24 @@ import time
 def update(filepath):
     index_name = 'demo'
     type_name = 'person'
+    index_mappings = \
+    {'mappings':{
+        'person':{'properties':
+            {'subj':{'type':'keyword'},
+             'height':{'type':'integer'},
+             'weight':{'type':'integer'},
+             'po':{'type':'nested',
+                 'properties':{
+                     'pred':{'type':'keyword'},
+                     'obj':{'type':'keyword'}}
+                 }
+             }
+            }
+        }
+    }
     es = ES()
     es.delete_index(index_name)
-    es.create_index(type_name)
+    es.create_index(index_name, index_mappings)
     count = 0
     t0 = time.time()
     with open(filepath) as f:

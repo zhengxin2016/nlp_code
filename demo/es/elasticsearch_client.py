@@ -13,16 +13,16 @@ class ES():
     def create_index(self, index_name, index_mappings=None):
         if not self.es.indices.exists(index=index_name):
             self.es.indices.create(index=index_name, body=index_mappings)
-            print('created index: '+index_name)
+            print('(create_index) created index: '+index_name)
         else:
-            print('index exist: '+index_name)
+            print('(create_index) index exist: '+index_name)
 
     def delete_index(self, index_name):
         if self.es.indices.exists(index=index_name):
             self.es.indices.delete(index=index_name)
-            print('delete index: '+index_name)
+            print('(delete_index) delete index: '+index_name)
         else:
-            print('index no exist: '+index_name)
+            print('(delete_index) index no exist: '+index_name)
 
 
     def insert(self, index_name, type_name, data):

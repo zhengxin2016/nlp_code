@@ -190,6 +190,21 @@ class ReadData():
         core_name = 'zx_common_interaction'
         return self.solr_id2answers(core_name, _id)
 
+    def sentiment_answers(self, sentiment_type):
+        try:
+            core_name = 'zx_common_sentiment'
+            select = 'label_str:'+sentiment_type
+            fields = ['answers', 'emotion_url', 'media', 'timeout']
+            max_num = 1
+            data = [x for x in self.solr.query_solr(core_name, select, fields,
+                max_num).docs]
+            data = data[0]
+            return {'answer':random.sample(data['answers'], 1)[0], 'emotion':
+                    data['emotion_url'][0], 'media':data['media'][0],
+                    'timeout':data['timeout'][0]}
+        except Exception:
+            return {'answer':None, 'emotion':None, 'media':None, 'timeout':None}
+
 if __name__ == '__main__':
     rd = ReadData('127.0.0.1', 27017, 'bank_ccb')
     print('XXXXXXXXXXXXX 存款五万以下 XXXXXXXXXXXXXXXXXXXXXXX')
@@ -229,6 +244,9 @@ if __name__ == '__main__':
         print(x['question'], rd.interaction_id2answers(x['_id']))
     for x in rd.common_interaction_questions('你真笨', 3):
         print(x['question'], rd.common_interaction_id2answers(x['_id']))
+
+    print('XXXXXXXXXXXXXXXX  sentiment  XXXXXXXXXXXXXXXXXX')
+    print(rd.sentiment_answers('Joy'))
 
 
 
