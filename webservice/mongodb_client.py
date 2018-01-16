@@ -94,8 +94,10 @@ class Mongo():
             for key in raw_query.keys():
                 if key == 'group':
                     query['business'] = re.compile(raw_query[key])
-                if key == 'label':
+                elif key == 'label':
                     query['intention'] = re.compile(raw_query[key])
+                else:
+                    query[key] = re.compile(raw_query[key])
             data = [pro(x) for x in self.db.dialogue.find(query)]
             return data
         except Exception:
@@ -164,10 +166,7 @@ class Mongo():
                 return x
             query = {}
             for key in raw_query.keys():
-                if key == 'group':
-                    query['group'] = re.compile(raw_query[key])
-                if key == 'label':
-                    query['label'] = re.compile(raw_query[key])
+                query[key] = re.compile(raw_query[key])
             data = [pro(x) for x in self.db[collection].find(query)]
             return data
         except Exception:
