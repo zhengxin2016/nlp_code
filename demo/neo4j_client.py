@@ -56,6 +56,7 @@ class Person(GraphObject):
     likes = RelatedTo('Person')
 
 if __name__ == '__main__':
-    print('ok')
-    jack = Person().select(graph, 'A_Jack').first()
-    print(jack.name, jack.age, jack.location)
+    #print('ok')
+    #jack = Person().select(graph, 'A_Jack').first()
+    #print(jack.name, jack.age, jack.location)
+    graph.delete_all()
