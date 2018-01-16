@@ -95,7 +95,8 @@ class Mongo():
                 if key == 'group':
                     query['business'] = re.compile(raw_query[key])
                 elif key == 'label':
-                    query['intention'] = re.compile(raw_query[key])
+                    query['$or'] = [{'super_intention':re.compile(raw_query[key])},
+                            {'intention':re.compile(raw_query[key])}]
                 else:
                     query[key] = re.compile(raw_query[key])
             data = [pro(x) for x in self.db.dialogue.find(query)]
