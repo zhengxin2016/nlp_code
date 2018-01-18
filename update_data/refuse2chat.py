@@ -49,19 +49,6 @@ class Refuse2chat(BaseClass):
         for f in os.listdir(refuse2chat_path):
             self.read_data(os.path.join(refuse2chat_path, f))
 
-    def write_data2mongodb(self):
-        self.db['refuse2chat'].drop()
-        self.db['refuse2chat'].insert(self.data)
-        self.db['refuse2chat'].create_index('question')
-
-    def write_data2solr(self):
-        scene_name = self.db_name + '_refuse2chat'
-        self.solr.delete_solr_by_query(self.solr_core, 'scene:'+scene_name)
-        for x in self.db['refuse2chat'].find():
-            x['_id'] = str(x['_id'])
-            x['scene'] = scene_name
-            self.solr.update_solr(x, self.solr_core)
-
     def update(self):
         print('load data')
         self.load_data()
