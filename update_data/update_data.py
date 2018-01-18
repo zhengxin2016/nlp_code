@@ -120,7 +120,7 @@ def update_common(ip, port):
 if __name__ == '__main__':
     ip = '127.0.0.1'
     port = 27017
-    Mode = ['bank', 'bank_ccb', 'bank_psbc', 'suning_biu', 'ecovacs', 'ule']
+    Mode = ['bank', 'bank_ccb', 'bank_psbc', 'suning_biu', 'ecovacs']
     if len(sys.argv) != 2:
         print('!!!The number of args is wrong!!!')
         assert(0)

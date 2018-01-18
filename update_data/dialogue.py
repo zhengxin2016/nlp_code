@@ -7,20 +7,15 @@ import shutil
 from pymongo import MongoClient
 from fun import clean_str, split_pro, Emotion, questions_pro
 from solr import SOLR
+from utils import BaseClass
 
-class Dialogue():
-    def __init__(self, ip, port, db_name):
-        self.dirpath = 'data/' + db_name
-        self.db_name = db_name
-        self.db = MongoClient(ip, port)[db_name]
+class Dialogue(BaseClass):
+    def __init__(self, ip, port, db_name, collection_name='dialogue'):
+        super().__init__(ip, port, db_name, collection_name)
         self.q2i = {}
         self.i2a = {}
-        self.dialogue = []
         self.I = set()
         self.II = set()
-        self.solr_url = 'http://'+ ip +':8999/solr'
-        self.solr_core = 'zx_' + self.db_name + '_dialogue'
-        self.solr = SOLR(self.solr_url)
 
     def read_questions(self, filepath):
         #0问题 1回答 2业务 3意图 4上级意图 5等价描述
@@ -79,25 +74,11 @@ class Dialogue():
             dic['emotion_url'] = Emotion[self.i2a[i[1]][1]]
             dic['media'] = self.i2a[i[1]][2]
             dic['timeout'] = self.i2a[i[1]][3]
-            self.dialogue.append(dic)
+            self.data.append(dic)
         self.db['dialogue'].drop()
-        self.db['dialogue'].insert(self.dialogue)
+        self.db['dialogue'].insert(self.data)
         self.db['dialogue'].create_index('intention')
         #print(self.II - self.I)
-
-    def write_data2solr(self):
-        self.solr.delete_solr_core(self.solr_core)
-        self.solr.create_solr_core(self.solr_core)
-        for x in self.db['dialogue'].find():
-            data_one = x.copy()
-            data_one['_id'] = str(data_one['_id'])
-            data_one.pop('equal_questions')
-            for q in x['equal_questions']:
-                if data_one['super_intention'] == '':
-                    data_one['super_intention'] = 'null'
-                data_one['question'] = q
-                data_one['question_ik'] = q
-                self.solr.update_solr(data_one, self.solr_core)
 
     def update(self):
         print('load data')
@@ -118,7 +99,7 @@ if __name__ == '__main__':
         print('!!!error arg:', sys.argv[1])
         assert(0)
     mode = sys.argv[1]
-    d = Dialogue(ip, port, mode)
+    d = Dialogue(ip, port, mode, 'dialogue')
     print('--------dialogue starting--------')
     d.update()
     print('--------dialogue ok-----------')

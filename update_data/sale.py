@@ -10,16 +10,11 @@ from pymongo import MongoClient
 from fun import clean_str, split_pro, Emotion, questions_pro
 import sys
 from solr import SOLR
+from utils import BaseClass
 
-class Sale():
-    def __init__(self, ip, port, db_name):
-        self.dirpath = 'data/' + db_name
-        self.db_name = db_name
-        self.db = MongoClient(ip, port)[db_name]
-        self.sale = []
-        self.solr_url = 'http://'+ ip +':8999/solr'
-        self.solr_core = 'zx_' + self.db_name + '_sale'
-        self.solr = SOLR(self.solr_url)
+class Sale(BaseClass):
+    def __init__(self, ip, port, db_name, collection_name='sale'):
+        super().__init__(ip, port, db_name, collection_name)
 
     def read_data(self, filepath):
         #0分组 1问题标签 2回答 3等价描述 4类别 5表情 6图片 7产品介绍 8超时时间
@@ -54,31 +49,12 @@ class Sale():
                     data['media'] = d[6]
                     data['description'] = d[7]
                     data['timeout'] = timeout
-                    self.sale.append(data)
+                    self.data.append(data)
 
     def load_data(self):
         sale_path = os.path.join(self.dirpath, 'sale')
         for f in os.listdir(sale_path):
             self.read_data(os.path.join(sale_path, f))
-
-    def write_data2mongodb(self):
-        self.db['sale'].drop()
-        self.db['sale'].insert(self.sale)
-        self.db['sale'].create_index('group')
-        self.db['sale'].create_index('label')
-        self.db['sale'].create_index('type')
-
-    def write_data2solr(self):
-        self.solr.delete_solr_core(self.solr_core)
-        self.solr.create_solr_core(self.solr_core)
-        for x in self.db['sale'].find():
-            data_one = x.copy()
-            data_one['_id'] = str(data_one['_id'])
-            data_one.pop('equal_questions')
-            for q in x['equal_questions']:
-                data_one['question'] = q
-                data_one['question_ik'] = q
-                self.solr.update_solr(data_one, self.solr_core)
 
     def update(self):
         print('load data')
@@ -99,7 +75,7 @@ if __name__ == '__main__':
         print('!!!error arg:', sys.argv[1])
         assert(0)
     mode = sys.argv[1]
-    s = Sale(ip, port, mode)
+    s = Sale(ip, port, mode, 'sale')
     print('--------sale starting--------')
     s.update()
     print('--------sale ok-----------')

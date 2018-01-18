@@ -8,16 +8,11 @@ from pymongo import MongoClient
 
 from fun import clean_str, split_pro, Emotion, questions_pro
 from solr import SOLR
+from utils import BaseClass
 
-class Greeting():
-    def __init__(self, ip, port, db_name):
-        self.dirpath = 'data/' + db_name
-        self.db_name = db_name
-        self.db = MongoClient(ip, port)[db_name]
-        self.greeting = []
-        self.solr_url = 'http://'+ ip +':8999/solr'
-        self.solr_core = 'zx_' + self.db_name + '_greeting'
-        self.solr = SOLR(self.solr_url)
+class Greeting(BaseClass):
+    def __init__(self, ip, port, db_name, collection_name='greeting'):
+        super().__init__(ip, port, db_name, collection_name)
 
     def read_data(self, filepath):
         #0分组 1问题标签 2回答 3等价描述 4表情 5图片 6超时时间
@@ -50,30 +45,12 @@ class Greeting():
                     data['emotion_url'] = Emotion[d[4]]
                     data['media'] = d[5]
                     data['timeout'] = timeout
-                    self.greeting.append(data)
+                    self.data.append(data)
 
     def load_data(self):
         greeting_path = os.path.join(self.dirpath, 'greeting')
         for f in os.listdir(greeting_path):
             self.read_data(os.path.join(greeting_path, f))
-
-    def write_data2mongodb(self):
-        self.db['greeting'].drop()
-        self.db['greeting'].insert(self.greeting)
-        self.db['greeting'].create_index('group')
-        self.db['greeting'].create_index('label')
-
-    def write_data2solr(self):
-        self.solr.delete_solr_core(self.solr_core)
-        self.solr.create_solr_core(self.solr_core)
-        for x in self.db['greeting'].find():
-            data_one = x.copy()
-            data_one['_id'] = str(data_one['_id'])
-            data_one.pop('equal_questions')
-            for q in x['equal_questions']:
-                data_one['question'] = q
-                data_one['question_ik'] = q
-                self.solr.update_solr(data_one, self.solr_core)
 
     def update(self):
         print('load data')
@@ -95,7 +72,7 @@ if __name__ == '__main__':
         print('!!!error arg:', sys.argv[1])
         assert(0)
     mode = sys.argv[1]
-    g = Greeting(ip, port, mode)
+    g = Greeting(ip, port, mode, 'greeting')
     print('--------greeting starting-------')
     g.update()
     print('--------greeting ok-----------')

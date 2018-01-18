@@ -68,7 +68,7 @@ class SOLR():
         data = "<delete><query>"+query+"</query></delete>"
         data = data.encode('utf8')
         r = requests.post(url, headers=headers, params=params, data=data)
-        print(r.text)
+        #print(r.text)
 
     def query_question_solr(self, core_name, question, fields, num):
         query = {
@@ -100,8 +100,8 @@ if __name__ == '__main__':
     URL = 'http://localhost:8999/solr'
     solr = SOLR(URL)
     core_name = 'test_core'
-    #solr.delete_solr_core(core_name)
-    #solr.create_solr_core(core_name)
+    solr.delete_solr_core(core_name)
+    solr.create_solr_core(core_name)
     #Data = mongo()
     #for data in Data:
     #    solr.update_solr(data, core_name)

@@ -8,16 +8,11 @@ from pymongo import MongoClient
 
 from fun import clean_str, split_pro, Emotion
 from solr import SOLR
+from utils import BaseClass
 
-class Refuse2chat():
-    def __init__(self, ip, port, db_name):
-        self.dirpath = 'data/' + db_name
-        self.db_name = db_name
-        self.db = MongoClient(ip, port)[db_name]
-        self.refuse2chat = []
-        self.solr_url = 'http://'+ ip +':8999/solr'
-        self.solr_core = 'zx_' + self.db_name + '_refuse2chat'
-        self.solr = SOLR(self.solr_url)
+class Refuse2chat(BaseClass):
+    def __init__(self, ip, port, db_name, collection_name='refuse2chat'):
+        super().__init__(ip, port, db_name, collection_name)
 
     def read_data(self, filepath):
         #0问题 1回答 2表情 3图片 4超时时间
@@ -47,7 +42,7 @@ class Refuse2chat():
                     data['emotion_url'] = Emotion[d[2]]
                     data['media'] = d[3]
                     data['timeout'] = timeout
-                    self.refuse2chat.append(data)
+                    self.data.append(data)
 
     def load_data(self):
         refuse2chat_path = os.path.join(self.dirpath, 'refuse2chat')
@@ -56,14 +51,15 @@ class Refuse2chat():
 
     def write_data2mongodb(self):
         self.db['refuse2chat'].drop()
-        self.db['refuse2chat'].insert(self.refuse2chat)
+        self.db['refuse2chat'].insert(self.data)
         self.db['refuse2chat'].create_index('question')
 
     def write_data2solr(self):
-        self.solr.delete_solr_core(self.solr_core)
-        self.solr.create_solr_core(self.solr_core)
+        scene_name = self.db_name + '_refuse2chat'
+        self.solr.delete_solr_by_query(self.solr_core, 'scene:'+scene_name)
         for x in self.db['refuse2chat'].find():
             x['_id'] = str(x['_id'])
+            x['scene'] = scene_name
             self.solr.update_solr(x, self.solr_core)
 
     def update(self):
@@ -85,7 +81,7 @@ if __name__ == '__main__':
         print('!!!error arg:', sys.argv[1])
         assert(0)
     mode = sys.argv[1]
-    r = Refuse2chat(ip, port, mode)
+    r = Refuse2chat(ip, port, mode, 'refuse2chat')
     print('--------refuse2chat starting-------')
     r.update()
     print('--------refuse2chat ok-----------')
