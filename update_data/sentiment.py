@@ -8,16 +8,11 @@ from pymongo import MongoClient
 
 from fun import clean_str, split_pro, Emotion
 from solr import SOLR
+from utils import BaseClass
 
-class Sentiment():
-    def __init__(self, ip, port):
-        self.dirpath = 'data/common'
-        self.db_name = 'common'
-        self.db = MongoClient(ip, port)[self.db_name]
-        self.sentiment = []
-        self.solr_url = 'http://'+ ip +':8999/solr'
-        self.solr_core = 'zx_' + self.db_name + '_sentiment'
-        self.solr = SOLR(self.solr_url)
+class Sentiment(BaseClass):
+    def __init__(self, ip, port, db_name='common', collection_name='sentiment'):
+        super().__init__(ip, port, db_name, collection_name)
 
     def read_data(self, filepath):
         #0问题 1回答 2表情 3图片 4超时时间
@@ -47,7 +42,7 @@ class Sentiment():
                     data['emotion_url'] = Emotion[d[2]]
                     data['media'] = d[3]
                     data['timeout'] = timeout
-                    self.sentiment.append(data)
+                    self.data.append(data)
 
     def load_data(self):
         sentiment_path = os.path.join(self.dirpath, 'sentiment')
@@ -56,14 +51,15 @@ class Sentiment():
 
     def write_data2mongodb(self):
         self.db['sentiment'].drop()
-        self.db['sentiment'].insert(self.sentiment)
+        self.db['sentiment'].insert(self.data)
         self.db['sentiment'].create_index('question')
 
     def write_data2solr(self):
-        self.solr.delete_solr_core(self.solr_core)
-        self.solr.create_solr_core(self.solr_core)
+        scene_name = self.db_name + '_refuse2chat'
+        self.solr.delete_solr_by_query(self.solr_core, 'scene:'+scene_name)
         for x in self.db['sentiment'].find():
             x['_id'] = str(x['_id'])
+            x['scene'] = scene_name
             self.solr.update_solr(x, self.solr_core)
 
     def update(self):
