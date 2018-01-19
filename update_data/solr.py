@@ -8,6 +8,8 @@ import shutil
 from pymongo import MongoClient
 home_dir = os.path.expanduser('~')
 
+SOLR_CORE_NAME = 'data_core'
+
 class SOLR():
     def __init__(self, url):
         self.url = url
@@ -99,7 +101,7 @@ def mongo():
 if __name__ == '__main__':
     URL = 'http://localhost:8999/solr'
     solr = SOLR(URL)
-    core_name = 'test_core'
+    core_name = 'data_core'
     solr.delete_solr_core(core_name)
     solr.create_solr_core(core_name)
     #Data = mongo()
