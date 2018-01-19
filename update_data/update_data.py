@@ -116,7 +116,7 @@ def update_common(ip, port):
     copydb.copy_mongodb()
     print('--------common ok-----------')
 
-def update_sentiment(ip. port):
+def update_sentiment(ip, port):
     print('--------sentiment starting-------')
     sen = Sentiment(ip, port)
     sen.update()
@@ -143,6 +143,7 @@ if __name__ == '__main__':
         print('########## '+m+' END ###########')
     if sys.argv[1] == 'all':
         update_common(ip, port)
+        update_sentiment(ip, port)
     print('(^_^) '+ str(mode) +' all ok...')
 
 
