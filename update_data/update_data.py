@@ -13,6 +13,7 @@ from sale import Sale
 from sale_2 import Sale_2
 from refuse2chat import Refuse2chat
 from interaction import Interaction
+from sentiment import Sentiment
 import common
 
 class Update_data():
