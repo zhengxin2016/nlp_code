@@ -116,6 +116,12 @@ def update_common(ip, port):
     copydb.copy_mongodb()
     print('--------common ok-----------')
 
+def update_sentiment(ip. port):
+    print('--------sentiment starting-------')
+    sen = Sentiment(ip, port)
+    sen.update()
+    print('--------sentiment ok-----------')
+
 
 if __name__ == '__main__':
     ip = '127.0.0.1'
