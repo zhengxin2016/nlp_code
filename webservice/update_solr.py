@@ -10,6 +10,7 @@ class Update():
     def __init__(self, ip, db_name):
         self.db_name = db_name
         self.db = MongoClient('127.0.0.1', 27017)[db_name]
+        self.core_name = 'data_test'
         self.solr_url = 'http://127.0.0.1:8999/solr'
         self.solr = SOLR(self.solr_url)
 
@@ -24,30 +25,33 @@ class Update():
         logs = [x for x in self.db.log.find(query).sort('time')]
         return logs
 
-    def check_solr_core(self, collection):
-        core_name = 'zx_'+self.db_name+'_'+collection
-        if not self.solr.solr_core_exists(core_name):
-            self.solr.create_solr_core(core_name)
+    def check_solr_core(self):
+        if not self.solr.solr_core_exists(self.core_name):
+            self.solr.create_solr_core(self.core_name)
 
     def update_data(self, collection, cmd, _id):
-        core_name = 'zx_'+self.db_name+'_'+collection
         def insert(collection, _id):
             data = self.db[collection].find_one({'_id':ObjectId(_id)})
             if not data:
                 return
             data_one = data.copy()
+            data_one['scene'] = self.db_name
+            data_one['topic'] = collection
             data_one['_id'] = str(data_one['_id'])
+            if collection in ['refuse2chat', 'sentiment']:
+                self.solr.update_solr(data_one, self.solr_core)
+                return None
             data_one.pop('equal_questions')
             for q in data['equal_questions']:
                 data_one['question'] = q
-                self.solr.update_solr(data_one, core_name)
+                self.solr.update_solr(data_one, self.core_name)
         if cmd == 'create':
             insert(collection, _id)
         elif cmd == 'update':
-            self.solr.delete_solr_by_query(core_name, '_id:'+_id)
+            self.solr.delete_solr_by_query(self.core_name, '_id_str:'+_id)
             insert(collection, _id)
         elif cmd == 'delete':
-            self.solr.delete_solr_by_query(core_name, '_id:'+_id)
+            self.solr.delete_solr_by_query(self.core_name, '_id_str:'+_id)
         else:
             return 0
 
@@ -59,7 +63,7 @@ class Update():
                 return 1
             for log in logs:
                 if log['cmd'] == 'create':
-                    self.check_solr_core(log['collection'])
+                    self.check_solr_core()
                 for _id in log['ids']:
                     self.update_data(log['collection'], log['cmd'], _id)
                 if server_name == 'develop':
