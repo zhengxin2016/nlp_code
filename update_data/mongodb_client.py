@@ -25,15 +25,17 @@ class SearchData():
         self.solr_core = solr_core
         self.solr = SOLR(self.solr_url)
 
-    def search_answer(self, select='*:*', scene=[], topic=[]):
+    def search_answer(self, select='*:*', scene_topic=[]):
         try:
             fields = ['answers', 'emotion_url', 'media', 'timeout']
-            if scene != []:
-                select_part = '(scene_str:'+' OR scene_str:'.join(scene) + ')'
-                select = select_part + ' AND ' + select
-            if topic != []:
-                select_part = '(topic_str:'+' OR topic_str:'.join(topic) + ')'
-                select = select_part + ' AND ' + select
+            select_parts = []
+            for scene in scene_topic:
+                s = 'scene_str:'+scene 
+                if scene_topic[scene] != []:
+                    s = '('+ s + ' AND (topic_str:'+ \
+                            ' OR topic_str:'.join(scene_topic[scene]) +'))'
+                select_parts.append(s)
+            select = '('+' OR '.join(select_parts) + ') AND ' + select
             data = [x for x in self.solr.query_solr(self.solr_core, select,
                 fields, 1).docs]
             data = data[0]
@@ -44,19 +46,21 @@ class SearchData():
             traceback.print_exc()
             return {'answer':None, 'emotion':None, 'media':None, 'timeout':None}
 
-    def search_questions(self, select='*:*', scene=None, topic=None,
+    def search_questions(self, select='*:*', scene_topic=[],
             fields=['question'], max_num=10):
         try:
             def pro_data(data):
                 for key in data.keys():
                     data[key] = data[key][0]
                 return data
-            if scene != []:
-                select_part = '(scene_str:'+' OR scene_str:'.join(scene) + ')'
-                select = select_part + ' AND ' + select
-            if topic != []:
-                select_part = '(topic_str:'+' OR topic_str:'.join(topic) + ')'
-                select = select_part + ' AND ' + select
+            select_parts = []
+            for scene in scene_topic:
+                s = 'scene_str:'+scene 
+                if scene_topic[scene] != []:
+                    s = '('+ s + ' AND (topic_str:'+ \
+                            ' OR topic_str:'.join(scene_topic[scene]) +'))'
+                select_parts.append(s)
+            select = '('+' OR '.join(select_parts) + ') AND ' + select
             data = [pro_data(x) for x in self.solr.query_solr(self.solr_core,
                 select, fields, max_num).docs]
             return data
@@ -101,16 +105,15 @@ if __name__ == '__main__':
     print('--------------- intention_answer ------------------------')
     intention = '取款'
     select = 'intention_str:'+intention
-    r = s.search_answer(select=select, scene=['bank_psbc'],
-            topic=['dialogue'])
+    r = s.search_answer(select=select, scene_topic={'bank_psbc':['dialogue']})
     print(intention, r)
 
     print('\n--------------- intention_questions ------------------------')
     intention = '取款'
     question = '我要取钱'
     select = 'intention_str:' + intention + ' AND question_ik:' + question
-    r = s.search_questions(select=select, scene=['bank_psbc'],
-            topic=['dialogue'], fields=['question'], max_num=10)
+    r = s.search_questions(select=select, scene_topic={'bank_psbc':['dialogue']},
+            fields=['question'], max_num=10)
     print(intention, question, r)
 
     print('\n-------------- intention_pair_questions -------------------')
@@ -119,8 +122,8 @@ if __name__ == '__main__':
     question = '我要取钱'
     select = 'super_intention_str:' + super_intention + ' AND intention_str:'+\
             intention + ' AND question_ik:' + question
-    r = s.search_questions(select=select, scene=['bank_psbc'],
-            topic=['dialogue'], fields=['question'], max_num=10)
+    r = s.search_questions(select=select, scene_topic={'bank_psbc':['dialogue']},
+            fields=['question'], max_num=10)
     print(intention, question, r)
 
     print('\n--------------- qa_questions ------------------------')
@@ -130,7 +133,7 @@ if __name__ == '__main__':
     #interaction_questions
     question = '信用卡活动'
     select = 'question_ik:' + question
-    r = s.search_questions(select=select, scene=['bank_psbc'], topic=['qa'],
+    r = s.search_questions(select=select, scene_topic={'bank_psbc':['qa']},
             fields=['_id', 'question'], max_num=10)
     print(question, r)
 
@@ -141,11 +144,11 @@ if __name__ == '__main__':
     #interaction_id2answers
     _id = r[0]['_id']
     select = '_id_str:' + _id
-    r = s.search_answer(select=select, scene=['bank_psbc'], topic=['qa'])
+    r = s.search_answer(select=select, scene_topic={'bank_psbc':['qa']})
     print(_id, r)
 
     print('\n--------------- sale_id2description ------------------------')
-    r = s.search_questions(select='question_ik:我抢钱', scene=['bank_psbc'], topic=['sale'],
+    r = s.search_questions(select='question_ik:我抢钱', scene_topic={'bank_psbc':['sale']},
             fields=['_id', 'question'], max_num=10)
     _id = r[0]['_id']
     r = s.sale_id2description(_id, 'bank_psbc')
@@ -158,14 +161,13 @@ if __name__ == '__main__':
 
     print('\n--------------- refuse2chat ------------------------')
     select = '*:*'
-    r = s.search_answer(select=select, scene=['bank_psbc'],
-            topic=['refuse2chat'])
+    r = s.search_answer(select=select, scene_topic={'bank_psbc':['refuse2chat']})
     print(r)
 
     print('\n--------------- sentiment_answer ------------------------')
     label = 'Joy'
     select = 'label_str:' + label
-    r = s.search_answer(select=select, scene=['common'], topic=['sentiment'])
+    r = s.search_answer(select=select, scene_topic={'common':['sentiment']})
     print(label, r)
 
 
