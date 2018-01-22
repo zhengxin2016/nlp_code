@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os, sys
+import traceback
 import re
 from pymongo import MongoClient
 from bson.objectid import ObjectId
@@ -10,10 +11,12 @@ class Mongo():
     def __init__(self, db_name):
         self.db_name = db_name
         self.client = MongoClient('127.0.0.1', 27017)
-        self.db = self.client[db_name]
+        self.db = self.client[self.db_name]
         if self.db_name.endswith('_test'):
-            self.commit_db = self.client[self.db_name[:-5]]
+            self.commit_db_name = self.db_name[:-5]
+            self.commit_db = self.client[self.commit_db_name]
         else:
+            self.commit_db_name = self.db_name
             self.commit_db = self.db
     '''
     client = MongoClient('127.0.0.1', 27017)
@@ -22,6 +25,23 @@ class Mongo():
     db = client['t']
     #db.command('cloneCollection', **{'cloneCollection':'test.dialogue', 'from':'127.0.0.1:27017'})
     '''
+    def delete_db(self):
+        try:
+            self.client.drop_database(self.db_name)
+            self.client.drop_database(self.commit_db_name)
+            return 1
+        except:
+            traceback.print_exc()
+            return 0
+
+    def delete_collection(self, collection):
+        try:
+            self.db[collection].drop()
+            self.commit_db[collection].drop()
+            return 1
+        except:
+            traceback.print_exc()
+            return 0
 
     def create_collection(self, collection):
         return 1
@@ -214,6 +234,7 @@ class Mongo():
             return 0
 
 if __name__ == '__main__':
+    '''
     mongo = Mongo('test_test')
     data = {'result':{'cmd':'create', 'ids':['001', '002', '003'],
         'comment':'xxx'}}
@@ -221,11 +242,10 @@ if __name__ == '__main__':
     data = {'result':[{'cmd':'update', '_id':'5a376ff472ebad1d8560ea0d', 'label':'test0'}]}
     r = mongo.store('tt', data)
     print(r)
-    '''
     mongo.create_collection('dialogue')
     data = {'result':{'cmd':'delete', 'ids':['5a09401f72ebad51948616bc']}}
     mongo.commit('dialogue', data)
-'''
+    '''
 
 
 

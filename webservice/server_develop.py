@@ -127,6 +127,18 @@ def create(db, collection, query):
         return {'result':'xxerror'} 
     return {'result':'ok'}
 
+def delete_db(db):
+    mongo = Mongo(db)
+    if not mongo.delete_db():
+        return {'result':'error'} 
+    return {'result':'ok'}
+
+def delete_collection(db, collection):
+    mongo = Mongo(db)
+    if not mongo.delete_collection(collection):
+        return {'result':'error'} 
+    return {'result':'ok'}
+
 def update_develop(db, log_id):
     up = Update('127.0.0.1', db)
     if not up.update('develop'):
@@ -150,6 +162,8 @@ CMD = {'count_data':count_data,
         'search_data':search_data,
         'commit':commit,
         'create':create,
+        'delete_db':delete_db,
+        'delete_collection':delete_collection,
         'update_develop':update_develop,
         'restore_develop':restore_develop,
         }
@@ -174,6 +188,15 @@ def cmd_3(cmd='', db='', collection=''):
         return CMD[cmd](db+'_test', collection, '')
     elif cmd in ['update_develop', 'restore_develop']:
         return CMD[cmd](db, collection) #collection => log_id
+    elif cmd in ['delete_collection']:
+        return CMD[cmd](db+'_test', collection)
+    else:
+        return {'result':'error'}
+
+@bottle.route('/:cmd/:db', method=['GET','POST'])
+def cmd_2(cmd='', db=''):
+    if cmd in ['delete_db']:
+        return CMD[cmd](db+'_test')
     else:
         return {'result':'error'}
 
