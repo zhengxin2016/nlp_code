@@ -23,6 +23,7 @@ ip:port/create/db/collection
 ------------------------------
 ip:port/update_develop/db
 ip:port/update_master/db
+ip:port/restore/db/id
 ------------------------------
 ip:port/delete_db/db
 ip:port/delete_collection/db/collection

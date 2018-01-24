@@ -54,14 +54,14 @@ class Data_backup():
                 query = '(scene_str:' + self.db_name + \
                         ' AND topic_str:' + collection + ')'
                 self.solr.delete_solr_by_query(self.core_name, query)
-                for x in self.db[collection].find():
-                    data_one = x.copy()
+                for data in self.db[collection].find():
+                    data_one = data.copy()
                     data_one['scene'] = self.db_name
                     data_one['topic'] = collection
                     data_one['_id'] = str(data_one['_id'])
                     if collection in ['refuse2chat', 'sentiment']:
                         self.solr.update_solr(data_one, self.core_name)
-                        return None
+                        break
                     data_one.pop('equal_questions')
                     for q in data['equal_questions']:
                         data_one['question'] = q
