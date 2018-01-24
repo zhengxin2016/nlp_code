@@ -1,16 +1,18 @@
 #!/usr/bin/env python3
 
 import os,sys
+import traceback
 from pymongo import MongoClient
 from bson.objectid import ObjectId
-from solr import SOLR
 from data_backup import Data_backup
+from solr import SOLR
+from solr import SOLR_CORE_NAME
 
 class Update():
     def __init__(self, ip, db_name):
         self.db_name = db_name
         self.db = MongoClient('127.0.0.1', 27017)[db_name]
-        self.core_name = 'data_test'
+        self.core_name = SOLR_CORE_NAME
         self.solr_url = 'http://127.0.0.1:8999/solr'
         self.solr = SOLR(self.solr_url)
 
@@ -39,7 +41,7 @@ class Update():
             data_one['topic'] = collection
             data_one['_id'] = str(data_one['_id'])
             if collection in ['refuse2chat', 'sentiment']:
-                self.solr.update_solr(data_one, self.solr_core)
+                self.solr.update_solr(data_one, self.core_name)
                 return None
             data_one.pop('equal_questions')
             for q in data['equal_questions']:
@@ -75,10 +77,10 @@ class Update():
                 self.db.log.update_one({'_id':log['_id']}, {'$set':value})
             return 1
         except Exception:
-            print('exception')
+            traceback.print_exc()
             return 0
 
 if __name__ == '__main__':
-    up = Update('127.0.0.1', 'bank_ccb')
+    up = Update('127.0.0.1', 'ecovacs')
     up.update('develop')
     #up.update('master')

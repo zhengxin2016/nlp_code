@@ -222,6 +222,7 @@ class Mongo():
             self.commit_log(collection, data['result'])
             return 1
         except Exception:
+            traceback.print_exc()
             return 0
 
     def copydb(self, fromhost):

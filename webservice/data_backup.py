@@ -5,6 +5,7 @@ from pymongo import MongoClient
 import shutil
 import utils
 from solr import SOLR
+from solr import SOLR_CORE_NAME
 
 DATA_PATH = '../Data_dump'
 
@@ -15,6 +16,7 @@ class Data_backup():
         self.db = self.client[self.db_name]
         self.solr_url = 'http://127.0.0.1:8999/solr'
         self.solr = SOLR(self.solr_url)
+        self.core_name = SOLR_CORE_NAME
 
     def data_dump(self, datapath, log_id):
         if not os.path.exists(datapath):
@@ -49,16 +51,21 @@ class Data_backup():
             collections.remove('log')
         try:
             for collection in collections:
-                core_name = 'zx_'+self.db_name+'_'+collection
-                self.solr.delete_solr_core(core_name)
-                self.solr.create_solr_core(core_name)
+                query = '(scene_str:' + self.db_name + \
+                        ' AND topic_str:' + collection + ')'
+                self.solr.delete_solr_by_query(self.core_name, query)
                 for x in self.db[collection].find():
                     data_one = x.copy()
+                    data_one['scene'] = self.db_name
+                    data_one['topic'] = collection
                     data_one['_id'] = str(data_one['_id'])
+                    if collection in ['refuse2chat', 'sentiment']:
+                        self.solr.update_solr(data_one, self.core_name)
+                        return None
                     data_one.pop('equal_questions')
-                    for q in x['equal_questions']:
+                    for q in data['equal_questions']:
                         data_one['question'] = q
-                        self.solr.update_solr(data_one, core_name)
+                        self.solr.update_solr(data_one, self.core_name)
             return 1
         except:
             traceback.print_exc()

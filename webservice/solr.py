@@ -8,6 +8,8 @@ import shutil
 from pymongo import MongoClient
 home_dir = os.path.expanduser('~')
 
+SOLR_CORE_NAME = 'data_core'
+
 class SOLR():
     def __init__(self, url):
         self.url = url
@@ -50,7 +52,7 @@ class SOLR():
         params = {'boost':1.0, 'overwrite':'true', 'commitWithin':1000}
         data = {'add':{'doc':data}}
         r = requests.post(url, headers=headers, params=params, json=data)
-        #print(r.text)
+        print(r.text)
 
     def delete_solr_by_id(self, core_name, _id):
         url = self.url + '/' + core_name + '/update?wt=json'
