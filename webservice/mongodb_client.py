@@ -69,15 +69,18 @@ class Mongo():
             def p(x):
                 x['_id'] = str(x['_id'])
                 return x
-            select = {}
             if 'group' in query.keys():
-                select['business'] = query['group']
+                query['business'] = query['group']
+                query.pop('group')
             if 'label' in query.keys():
                 intention = query['label']
                 #select['intention'] = intention
-                select['super_intention'] = intention.split('_')[0]
-                select['intention'] = intention.split('_')[1]
-            data = [p(x) for x in self.db.dialogue.find(select)]
+                query['super_intention'] = intention.split('_')[0]
+                query['intention'] = intention.split('_')[1]
+                query.pop('label')
+            if '_id' in query:
+                query['_id'] = ObjectId(query['_id'])
+            data = [p(x) for x in self.db.dialogue.find(query)]
             return data
         except Exception:
             return None
@@ -152,6 +155,8 @@ class Mongo():
             def p(x):
                 x['_id'] = str(x['_id'])
                 return x
+            if '_id' in query:
+                query['_id'] = ObjectId(query['_id'])
             data = [p(x) for x in self.db[collection].find(query)]
             return data
         except Exception:
