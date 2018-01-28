@@ -74,7 +74,6 @@ class Mongo():
                 query.pop('group')
             if 'label' in query.keys():
                 intention = query['label']
-                #select['intention'] = intention
                 query['super_intention'] = intention.split('_')[0]
                 query['intention'] = intention.split('_')[1]
                 query.pop('label')
