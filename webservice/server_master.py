@@ -10,7 +10,7 @@ from data_backup import Data_backup, DATA_PATH
 
 def update_master(db, log_id):
     mongo = Mongo(db)
-    if not mongo.copydb('10.89.100.14'):
+    if not mongo.copydb('10.89.14.67'):
         return {'result':'error'}
     up = Update('127.0.0.1', db)
     if not up.update('master'):
