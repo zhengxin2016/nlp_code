@@ -42,7 +42,7 @@ class Sale(BaseClass):
                     data['equal_questions'] = list(set(split_pro(d[1], '/') + \
                             split_pro(d[3], '/')))
                     data['equal_questions'] = \
-                            questions_pro(data['equal_questions'])
+                            list(set(questions_pro(data['equal_questions'])))
                     data['type'] = d[4]
                     data['emotion_name'] = d[5]
                     data['emotion_url'] = Emotion[d[5]]

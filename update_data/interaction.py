@@ -42,7 +42,7 @@ class Interaction(BaseClass):
                     data['equal_questions'] = list(set(split_pro(d[1], '/') + \
                             split_pro(d[3], '/')))
                     data['equal_questions'] = \
-                            questions_pro(data['equal_questions'])
+                            list(set(questions_pro(data['equal_questions'])))
                     data['emotion_name'] = d[4]
                     data['emotion_url'] = Emotion[d[4]]
                     data['media'] = d[5]

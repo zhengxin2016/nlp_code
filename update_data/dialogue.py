@@ -65,7 +65,7 @@ class Dialogue(BaseClass):
             i = key.split('#')
             self.I.add(i[1])
             dic = {}
-            dic['equal_questions'] = questions_pro(list(set(self.q2i[key])))
+            dic['equal_questions'] = list(set(questions_pro(list(set(self.q2i[key])))))
             dic['business'] = i[0]
             dic['intention'] = i[1]
             dic['super_intention'] = i[2]
