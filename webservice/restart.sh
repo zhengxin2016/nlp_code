@@ -9,7 +9,7 @@ for id in $ID
         echo "  => killed $id"
     done
 echo 'restart...'
-nohup python3 server_develop.py > server.log 2>&1 &
+nohup python3 $NAME > server.log 2>&1 &
 PROCESS=`ps -aux | grep "$NAME" | grep -v "grep"`
 echo "  => $PROCESS"
 echo 'finished!'
