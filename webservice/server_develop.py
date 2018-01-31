@@ -154,6 +154,21 @@ def restore_develop(db, log_id):
         return {'result':'error'}
     return {'result':'ok'}
 
+def search_automata(db, collection, query):
+    mongo = Mongo(db)
+    if type(query) == bytes:
+        query = query.decode('utf-8')
+    try:
+        query = json.loads(query)
+    except Exception:
+        return {'result':'query format error'}
+    if type(query) != dict:
+        return {'result':'query format error'}
+    data = mongo.search_automata(collection, query)
+    result = json.dumps({'result':data}, ensure_ascii=False, sort_keys=True)
+    result = result.encode('utf-8')
+    return result
+
 CMD = {'count_data':count_data,
         'load_group':load_group,
         'load_label':load_label,
@@ -166,6 +181,7 @@ CMD = {'count_data':count_data,
         'delete_collection':delete_collection,
         'update_develop':update_develop,
         'restore_develop':restore_develop,
+        'search_automata':search_automata,
         }
 
 @bottle.route('/:mode/:cmd/:db/:collection/:query', methods=['GET', 'POST'])
@@ -180,6 +196,7 @@ def cmd_5(mode='', cmd='', db='', collection='', query=''):
 def cmd_4(cmd='', db='', collection='', query=''):
     if cmd not in CMD.keys():
         return {'result':'cmd error'}
+    #/search_automata/db_name/collection/{}
     return CMD[cmd](db+'_test', collection, query)
 
 @bottle.route('/:cmd/:db/:collection', method=['GET','POST'])

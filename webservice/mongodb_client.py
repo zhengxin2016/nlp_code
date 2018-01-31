@@ -238,6 +238,26 @@ class Mongo():
         except Exception:
             return 0
 
+    def search_automata(self, collection, raw_query):
+        try:
+            def pro(x):
+                if '_id' in x:
+                    x['_id'] = str(x['_id'])
+                return x
+            query = {}
+            if 'exact' in raw_query:
+                for key in raw_query['exact']:
+                    query[key] = raw_query['exact'][key]
+            if 'regex' in raw_query:
+                for key in raw_query['regex']:
+                    query[key] = re.compile(raw_query['regex'][key])
+            data = [pro(x) for x in self.db[collection].find(query)]
+            print('len:', len(data))
+            return data
+        except Exception:
+            return None
+
+
 if __name__ == '__main__':
     '''
     mongo = Mongo('test_test')

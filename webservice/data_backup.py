@@ -7,7 +7,7 @@ import utils
 from solr import SOLR
 from solr import SOLR_CORE_NAME
 
-DATA_PATH = '../Data_dump'
+DATA_PATH = '~/Data_dump'
 
 class Data_backup():
     def __init__(self, db_name):
