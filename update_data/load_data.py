@@ -27,18 +27,27 @@ class SearchSolr():
                 else:
                     y['entities'] = ''
                 y['answers'] = x['answer']
+                y['emotion_name'] = 'null'
+                y['emotion_url'] = 'null'
+                y['media'] = 'null'
+                y['timeout'] = '0'
                 return y
 
+            Data = {}
             def pro_y(x):
                 y = {}
                 y['store_id'] = x['store_id'][0]
                 y['category'] = x['category'][0]
                 y['intent'] = x['intent']
-                y['question'] = x['question'][0]
+                y['questions'] = x['question']
                 if 'entities' in x:
                     y['entities'] = x['entities']
                 else:
                     y['entities'] = ''
+                if y['intent']+'|'+y['entities'] in Data:
+                    Data[y['intent']+'|'+y['entities']]['questions'].append(x['question'][0])
+                else:
+                    Data[y['intent']+'|'+y['entities']] = y
                 return y
 
             if flag == True:
@@ -47,6 +56,9 @@ class SearchSolr():
             else:
                 data = [pro_y(x) for x in self.solr.query_solr(self.solr_core,
                     select, fields, max_num).docs]
+                data = []
+                for key in Data.keys():
+                    data.append(Data[key])
             return data
         except:
             traceback.print_exc()
