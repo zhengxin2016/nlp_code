@@ -248,14 +248,33 @@ class Mongo():
             if 'exact' in raw_query:
                 for key in raw_query['exact']:
                     query[key] = raw_query['exact'][key]
+                    if key == '_id':
+                        query[key] = ObjectId(query[key])
             if 'regex' in raw_query:
                 for key in raw_query['regex']:
                     query[key] = re.compile(raw_query['regex'][key])
             data = [pro(x) for x in self.db[collection].find(query)]
-            print('len:', len(data))
             return data
         except Exception:
             return None
+
+    def search_automata_new(self, raw_query):
+        '''
+        {
+        "collection":"instruction",
+        "query":{"exact":{}, "regex":{}},
+        "sort"{"instruction":1}
+        "page_index":2,
+        "page_size":10,
+        "limit":5,
+        "fields":[],
+        }
+        '''
+        data=[x for x in self.db.instruction.find({},{'_id':0}).limit(5).skip(2)]
+        for d in data:
+            #print(d['instruction'])
+            print(d)
+        pass
 
 
 if __name__ == '__main__':
@@ -271,6 +290,8 @@ if __name__ == '__main__':
     data = {'result':{'cmd':'delete', 'ids':['5a09401f72ebad51948616bc']}}
     mongo.commit('dialogue', data)
     '''
+    mongo = Mongo('automata')
+    mongo.search_automata_new({})
 
 
 
