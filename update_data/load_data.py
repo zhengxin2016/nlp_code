@@ -56,9 +56,9 @@ class SearchSolr():
             else:
                 data = [pro_y(x) for x in self.solr.query_solr(self.solr_core,
                     select, fields, max_num).docs]
-                #data = []
-                #for key in Data.keys():
-                #    data.append(Data[key])
+                data = []
+                for key in Data.keys():
+                   data.append(Data[key])
             return data
         except:
             traceback.print_exc()
