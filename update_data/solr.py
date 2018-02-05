@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import os,sys
+import traceback
 from SolrClient import SolrClient
 import requests
 import json

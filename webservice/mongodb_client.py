@@ -3,6 +3,7 @@
 import os, sys
 import traceback
 import re
+import json
 from pymongo import MongoClient
 from bson.objectid import ObjectId
 import utils
@@ -270,11 +271,16 @@ class Mongo():
         "fields":[],
         }
         '''
-        data=[x for x in self.db.instruction.find({},{'_id':0}).limit(5).skip(2)]
+        #data=[x for x in self.db.instruction.find({},{'_id':0}).limit(5).skip(2)]
+        query = '''[{"$match":{"category":"process", "instruction":{"$regex":"api_call_"}}}, {"$project":{"instruction":1, "_id":0}}]'''
+        query = json.loads(query)
+        data=[x for x in self.db.instruction.aggregate(query)]
         for d in data:
             #print(d['instruction'])
             print(d)
-        pass
+        #print(help(self.db.instruction.map_reduce))
+        data=[x for x in self.db.instruction.find({},{'instruction':1, '_id':0})]
+        print(data)
 
 
 if __name__ == '__main__':

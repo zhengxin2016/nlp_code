@@ -32,21 +32,39 @@ class Update():
             self.solr.create_solr_core(self.core_name)
 
     def update_data(self, collection, cmd, _id):
+        def insert_automata(data, collection):
+            data['scene'] = data['store_id']
+            data['topic'] = data['category']
+            if collection in ['automata']:
+                questions = data['questions'].copy()
+                data.pop('questions')
+                for q in questions:
+                    data['question'] = q
+                    self.solr.update_solr(data, self.core_name)
+            elif collection in ['instruction']:
+                self.solr.update_solr(data, self.core_name)
+            else:
+                return None
+
         def insert(collection, _id):
             data = self.db[collection].find_one({'_id':ObjectId(_id)})
             if not data:
                 return
             data_one = data.copy()
+            data_one['_id'] = str(data_one['_id'])
+            if self.db_name == 'automata':
+                return insert_automata(data_one)
             data_one['scene'] = self.db_name
             data_one['topic'] = collection
-            data_one['_id'] = str(data_one['_id'])
             if collection in ['refuse2chat', 'sentiment']:
                 self.solr.update_solr(data_one, self.core_name)
                 return None
             data_one.pop('equal_questions')
             for q in data['equal_questions']:
                 data_one['question'] = q
+                data_one['question_ik'] = q
                 self.solr.update_solr(data_one, self.core_name)
+
         if cmd == 'create':
             insert(collection, _id)
         elif cmd == 'update':
@@ -81,6 +99,6 @@ class Update():
             return 0
 
 if __name__ == '__main__':
-    up = Update('127.0.0.1', 'ecovacs')
-    up.update('develop')
+    up = Update('127.0.0.1', 'data_core')
+    #up.update('develop')
     #up.update('master')
