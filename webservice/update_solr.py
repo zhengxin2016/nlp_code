@@ -33,8 +33,6 @@ class Update():
 
     def update_data(self, collection, cmd, _id):
         def insert_automata(data, collection):
-            data['scene'] = data['store_id']
-            data['topic'] = data['category']
             if collection in ['automata']:
                 questions = data['questions'].copy()
                 data.pop('questions')
@@ -52,13 +50,16 @@ class Update():
                 return
             data_one = data.copy()
             data_one['_id'] = str(data_one['_id'])
-            if self.db_name == 'automata':
-                return insert_automata(data_one)
             data_one['scene'] = self.db_name
             data_one['topic'] = collection
+            if self.db_name == 'automata':
+                return insert_automata(data_one)
             if collection in ['refuse2chat', 'sentiment']:
                 self.solr.update_solr(data_one, self.core_name)
                 return None
+            if 'super_intention' in data_one:
+                if data_one['super_intention'] == '':
+                    data_one['super_intention'] = 'null'
             data_one.pop('equal_questions')
             for q in data['equal_questions']:
                 data_one['question'] = q

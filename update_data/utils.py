@@ -29,7 +29,8 @@ class BaseClass():
             self.collection.create_index('label')
 
     def write_data2solr(self):
-        query = 'scene:'+self.db_name + ' AND topic:' + self.collection_name
+        query = 'scene_str:'+self.db_name + ' AND topic_str:' +\
+                        self.collection_name
         self.solr.delete_solr_by_query(self.solr_core, query)
         for x in self.collection.find():
             data_one = x.copy()

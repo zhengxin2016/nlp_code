@@ -69,6 +69,9 @@ class Mongodb():
         self.db_name = db_name
         self.db = MongoClient(ip, port)[db_name]
         self.db_test = MongoClient(ip, port)[db_name+'_test']
+        self.solr_url = 'http://'+ ip +':8999/solr'
+        self.solr_core = SOLR_CORE_NAME
+        self.solr = SOLR(self.solr_url)
 
     def write(self, collection, data):
         try:
@@ -81,16 +84,39 @@ class Mongodb():
             traceback.print_exc()
             return 0
 
+    def write_data2solr(self, collection, data):
+        query = 'scene_str:'+self.db_name+' AND topic_str:' +\
+                collection
+        self.solr.delete_solr_by_query(self.solr_core, query)
+        for x in self.db[collection].find():
+            data_one = x.copy()
+            data_one['scene'] = self.db_name
+            data_one['topic'] = collection
+            data_one['_id'] = str(data_one['_id'])
+            if collection in ['instruction']:
+                self.solr.update_solr(data_one, self.solr_core)
+                continue
+            if 'super_intention' in data_one:
+                if data_one['super_intention'] == '':
+                    data_one['super_intention'] = 'null'
+            data_one.pop('questions')
+            for q in x['questions']:
+                data_one['question'] = q
+                data_one['question_ik'] = q
+                self.solr.update_solr(data_one, self.solr_core)
+
 
 if __name__ == '__main__':
     mongo = Mongodb(db_name='automata')
     s = SearchSolr(solr_core='instruction')
     data = s.load_data(max_num=100, flag=True)
     mongo.write(collection='instruction', data=data)
+    mongo.write_data2solr(collection='instruction', data=data)
 
     s = SearchSolr(solr_core='automata')
     data = s.load_data(max_num=100000)
     mongo.write(collection='automata', data=data)
+    mongo.write_data2solr(collection='automata', data=data)
 
 
 
