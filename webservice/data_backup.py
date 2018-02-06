@@ -7,7 +7,7 @@ import utils
 from solr import SOLR
 from solr import SOLR_CORE_NAME
 
-DATA_PATH = '~/Data_dump'
+DATA_PATH = os.path.join(os.path.expanduser('~'),'Data_dump')
 
 class Data_backup():
     def __init__(self, db_name):
@@ -25,6 +25,7 @@ class Data_backup():
         if os.path.exists(dirpath):
             shutil.rmtree(dirpath)
         os.mkdir(dirpath)
+        assert(0)
         cmd_dump = 'mongodump -d '+self.db_name+' -o '+dirpath
         try:
             os.system(cmd_dump)
