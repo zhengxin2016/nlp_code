@@ -25,7 +25,6 @@ class Data_backup():
         if os.path.exists(dirpath):
             shutil.rmtree(dirpath)
         os.mkdir(dirpath)
-        assert(0)
         cmd_dump = 'mongodump -d '+self.db_name+' -o '+dirpath
         try:
             os.system(cmd_dump)
