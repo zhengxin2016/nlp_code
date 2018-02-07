@@ -103,6 +103,7 @@ class Mongodb():
             for q in x['questions']:
                 data_one['question'] = q
                 data_one['question_ik'] = q
+                data_one['question_cn'] = q
                 self.solr.update_solr(data_one, self.solr_core)
 
 
