@@ -102,8 +102,7 @@ def update(ip, port, mode):
             'ule':[up.update_dialogue, up.update_qa,
                 up.update_greeting, up.update_refuse2chat,
                 up.update_interaction],
-            'bookstore':[up.update_qa, up.update_greeting,
-                up.update_interaction],
+            'bookstore':[up.update_qa],
         }
     for f in Scene[mode]:
         f()
