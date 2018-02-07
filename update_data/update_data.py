@@ -102,6 +102,8 @@ def update(ip, port, mode):
             'ule':[up.update_dialogue, up.update_qa,
                 up.update_greeting, up.update_refuse2chat,
                 up.update_interaction],
+            'xhsd':[up.update_qa, up.update_greeting,
+                up.update_interaction],
         }
     for f in Scene[mode]:
         f()
@@ -127,7 +129,7 @@ def update_sentiment(ip, port):
 if __name__ == '__main__':
     ip = '127.0.0.1'
     port = 27017
-    Mode = ['bank', 'bank_ccb', 'bank_psbc', 'suning_biu', 'ecovacs']
+    Mode = ['bank', 'bank_ccb', 'bank_psbc', 'suning_biu', 'ecovacs', 'xhsd']
     if len(sys.argv) != 2:
         print('!!!The number of args is wrong!!!')
         assert(0)
