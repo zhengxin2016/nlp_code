@@ -64,6 +64,7 @@ class Update():
             for q in data['equal_questions']:
                 data_one['question'] = q
                 data_one['question_ik'] = q
+                data_one['question_cn'] = q
                 self.solr.update_solr(data_one, self.core_name)
 
         if cmd == 'create':
