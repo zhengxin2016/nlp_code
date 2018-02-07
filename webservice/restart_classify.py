@@ -15,11 +15,13 @@ def restart_sys(field):
     cmd = "echo 'ecovacs01!' | sudo -S bash " + shell_path + " " + field + " " + parent_path
     #print('CMD: ' + cmd)
     try:
-        os.system(cmd)
+        r = os.system(cmd)
+        if r:
+            return 0
         return 1
     except:
         traceback.print_exc()
         return 0
 
 if __name__ == '__main__':
-    restart_sys('bank_psbc')
+    print(restart_sys('bank_psbc'))
