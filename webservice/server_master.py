@@ -7,17 +7,20 @@ import json
 from mongodb_client import Mongo
 from update_solr import Update
 from data_backup import Data_backup, DATA_PATH
+from restart_classify import restart_sys
 
 def update_master(db, log_id):
     mongo = Mongo(db)
     if not mongo.copydb('10.89.14.67'):
-        return {'result':'error'}
+        return {'result':'copydb error'}
     up = Update('127.0.0.1', db)
     if not up.update('master'):
-        return {'result':'error'}
+        return {'result':'update data error'}
     backup = Data_backup(db)
     if not backup.data_dump(DATA_PATH, log_id):
-        return {'result':'error'}
+        return {'result':'data dump error'}
+    if not restart_sys(db):
+        return {'result':'restart system error'}
     return {'result':'ok'}
 
 def restore_master(db, log_id):
