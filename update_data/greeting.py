@@ -53,10 +53,10 @@ class Greeting(BaseClass):
             self.read_data(os.path.join(greeting_path, f))
 
     def update(self):
-        print('load data')
-        self.load_data()
-        print('write mongodb')
-        self.write_data2mongodb()
+        #print('load data')
+        #self.load_data()
+        #print('write mongodb')
+        #self.write_data2mongodb()
         print('write solr')
         self.write_data2solr()
 
