@@ -31,9 +31,10 @@ class SearchSolr():
                 y['emotion_url'] = 'null'
                 if 'media' in x:
                     y['media'] = x['media'][0]
+                    y['timeout'] = '15'
                 else:
                     y['media'] = 'null'
-                y['timeout'] = '0'
+                    y['timeout'] = '0'
                 return y
 
             Data = {}
@@ -87,7 +88,7 @@ class Mongodb():
             traceback.print_exc()
             return 0
 
-    def write_data2solr(self, collection, data):
+    def write_data2solr(self, collection):
         query = 'scene_str:'+self.db_name+' AND topic_str:' +\
                 collection
         self.solr.delete_solr_by_query(self.solr_core, query)
@@ -111,16 +112,17 @@ class Mongodb():
 
 
 if __name__ == '__main__':
-    mongo = Mongodb(db_name='bookstore')
-    s = SearchSolr(solr_core='instruction')
+    ip = '127.0.0.1'
+    mongo = Mongodb(db_name='bookstore', ip=ip)
+    s = SearchSolr(solr_core='instruction', ip=ip)
     data = s.load_data(max_num=100, flag=True)
     mongo.write(collection='instruction', data=data)
-    mongo.write_data2solr(collection='instruction', data=data)
+    mongo.write_data2solr(collection='instruction')
 
-    s = SearchSolr(solr_core='automata')
+    s = SearchSolr(solr_core='automata', ip=ip)
     data = s.load_data(max_num=100000)
     mongo.write(collection='automata', data=data)
-    mongo.write_data2solr(collection='automata', data=data)
+    mongo.write_data2solr(collection='automata')
 
 
 
