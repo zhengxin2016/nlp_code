@@ -108,7 +108,7 @@ class Mongodb():
 
 
 if __name__ == '__main__':
-    mongo = Mongodb(db_name='automata')
+    mongo = Mongodb(db_name='bookstore')
     s = SearchSolr(solr_core='instruction')
     data = s.load_data(max_num=100, flag=True)
     mongo.write(collection='instruction', data=data)
