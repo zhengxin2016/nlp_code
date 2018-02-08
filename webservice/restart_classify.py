@@ -1,5 +1,7 @@
 #!/usr/bin/env python3
 import os,sys
+import traceback
+from sys import argv
 
 def restart_sys(field):
     Mode = ['bank', 'bank_psbc', 'suning', 'ecovacs']
@@ -10,9 +12,9 @@ def restart_sys(field):
             print('!!!error arg:', argv[1])
             return 0
 
-    parent_path = '/home/ecovacs/nlp_git/SY1792-EcoNLP/nlp_framework'
-    shell_path = parent_path + '/rnn_text_classification/restart.sh'
-    cmd = "echo 'ecovacs01!' | sudo -S bash " + shell_path + " " + field + " " + parent_path
+    shell_path = '/home/ecovacs/nlp_git/SY1792-EcoNLP/nlp_framework/rnn_text_classification'
+    shell_file = shell_path + '/restart.sh'
+    cmd = "echo 'ecovacs01!' | sudo -S bash " + shell_file + " " + field + " " + shell_path
     #print('CMD: ' + cmd)
     try:
         r = os.system(cmd)
@@ -24,4 +26,5 @@ def restart_sys(field):
         return 0
 
 if __name__ == '__main__':
-    print(restart_sys('bank_psbc'))
+    script, field = argv
+    print(restart_sys(field))
