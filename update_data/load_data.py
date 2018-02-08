@@ -25,11 +25,14 @@ class SearchSolr():
                 if 'entities' in x:
                     y['entities'] = x['entities']
                 else:
-                    y['entities'] = ''
+                    y['entities'] = ['']
                 y['answers'] = x['answer']
                 y['emotion_name'] = 'null'
                 y['emotion_url'] = 'null'
-                y['media'] = 'null'
+                if 'media' in x:
+                    y['media'] = x['media'][0]
+                else:
+                    y['media'] = 'null'
                 y['timeout'] = '0'
                 return y
 
