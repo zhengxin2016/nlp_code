@@ -112,14 +112,13 @@ class Mongodb():
 
 
 if __name__ == '__main__':
-    ip = '127.0.0.1'
-    mongo = Mongodb(db_name='bookstore', ip=ip)
-    s = SearchSolr(solr_core='instruction', ip=ip)
+    mongo = Mongodb(db_name='bookstore')
+    s = SearchSolr(solr_core='instruction')
     data = s.load_data(max_num=100, flag=True)
     mongo.write(collection='instruction', data=data)
     mongo.write_data2solr(collection='instruction')
 
-    s = SearchSolr(solr_core='automata', ip=ip)
+    s = SearchSolr(solr_core='automata')
     data = s.load_data(max_num=100000)
     mongo.write(collection='automata', data=data)
     mongo.write_data2solr(collection='automata')
