@@ -212,6 +212,9 @@ class Mongo():
                 for _id in ids:
                     _id = ObjectId(_id)
                     d = self.db[collection].find_one({'_id':_id})
+                    if d is None:
+                        continue
+                    self.commit_db[collection].delete_one({'_id':_id})
                     self.commit_db[collection].insert(d)
             elif cmd == 'update':
                 for _id in ids:

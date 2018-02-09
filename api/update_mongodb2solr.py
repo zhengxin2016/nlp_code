@@ -5,13 +5,17 @@ import traceback
 from pymongo import MongoClient
 from solr import SOLR
 from solr import SOLR_CORE_NAME
+import bottle
+import json
+from flask import Flask
+app = Flask(__name__)
 
 class Update_data():
-    def __init__(self, db_name, solr_name=SOLR_CORE_NAME, ip='127.0.0.1',
-            port=27017):
+    def __init__(self, db_name, solr_name=SOLR_CORE_NAME, mongodb_ip='127.0.0.1',
+            solr_ip='127.0.0.1', port=27017):
         self.db_name = db_name
-        self.db = MongoClient(ip, port)[db_name]
-        self.solr_url = 'http://'+ ip +':8999/solr'
+        self.db = MongoClient(mongodb_ip, port)[db_name]
+        self.solr_url = 'http://'+ solr_ip +':8999/solr'
         self.solr_core = solr_name
         self.solr = SOLR(self.solr_url)
 
@@ -66,8 +70,42 @@ def update(argv):
             print('--------'+collection+' ok-----------')
         print('########## '+mode+' END ###########')
 
+#ip:port/update_develop/{"bank_psbc":["dialogue","qa"], "bookstore":["qa"]}
+@bottle.route('/:cmd/:fields', method=['GET', 'POST'])
+def update_api(cmd='', fields=''):
+    if cmd in ['update_develop', 'update_master']:
+        if type(fields) == bytes:
+            fields = fields.decode('utf-8')
+        try:
+            fields = json.loads(fields)
+        except:
+            traceback.print_exc()
+            return {'result':'fields error'}
+        if type(fields) != dict:
+            return {'result':'fields format error'}
+        for scene in fields.keys():
+            if type(fields[scene]) != list:
+                return {'result':'fields format error'}
+            print('########## '+scene+' START ###########')
+            up = Update_data(scene)
+            for collection in fields[scene]:
+                print('--------'+collection+' starting--------')
+                up.write_data2solr(collection)
+                print('--------'+collection+' ok-----------')
+            print('########## '+scene+' END ###########')
+        return {'result':'ok'}
+    else:
+        return {'result':'unknown cmd'}
+
+@app.route('/<cmd>/<fields>')
+def test(cmd, fields):
+    return {'result':'test'}
+    pass
+
 if __name__ == '__main__':
-    update(sys.argv)
+    #update(sys.argv)
+    #bottle.run(host='0.0.0.0', port=1234)
+    app.run(host='0.0.0.0', port=5000)
 
 
 

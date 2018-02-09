@@ -106,16 +106,16 @@ def update(ip, port, mode):
         }
     for f in Scene[mode]:
         f()
-    up.copy_mongodb()
+    #up.copy_mongodb()
 
 def update_common(ip, port):
     print('--------common starting--------')
     interaction = common.Interaction(ip, port)
     repeat = common.Repeat(ip, port)
-    copydb = common.Copydb(ip, port)
+    #copydb = common.Copydb(ip, port)
     interaction.update()
     repeat.update()
-    copydb.copy_mongodb()
+    #copydb.copy_mongodb()
     print('--------common ok-----------')
 
 def update_sentiment(ip, port):
