@@ -1,4 +1,11 @@
-
+##############
+mongodb
+pymongo
+solr
+solrclient
+bottle
+flask
+##############
 
 ip:port/cmd/db/collection/query
 cmd = {count_data, load_group, load_label, load_data, search_data}
