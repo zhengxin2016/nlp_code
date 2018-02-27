@@ -131,7 +131,7 @@ class Mongo_automata():
 
 def show_graph(scene_id):
     try:
-        mongo = Mongo_automata('10.89.100.14')
+        mongo = Mongo_automata('127.0.0.1')
         config = mongo.load_graph_config(scene_id=scene_id)
         if not config:
             return 0
