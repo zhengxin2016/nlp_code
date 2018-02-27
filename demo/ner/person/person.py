@@ -1,9 +1,11 @@
 #!/usr/bin/env python3
 import os,sys
 import pycrfsuite
+import base_crf
 
-class Feature():
+class Feature(base_crf.Feature):
     def __init__(self):
+        super().__init__()
         self.resource_path = 'resource'
         self.load_resource()
 
@@ -38,6 +40,8 @@ class Feature():
             return 'oth'
 
     def word2features(self, sent, i):
+        sent = ['start3', 'start2', 'start1'] + sent +\
+                ['stop1', 'stop2', 'stop3']
         j = i + 3
         word = sent[j]
         word_L2 = sent[j-2]
@@ -60,85 +64,16 @@ class Feature():
                 ]
         return features
 
-    def sent2features(self, sent):
-        sent_crf = ['start3', 'start2', 'start1'] + sent +\
-                ['stop1', 'stop2', 'stop3']
-        return [self.word2features(sent_crf, i) for i in range(len(sent))]
-
-class Data():
+class Data(base_crf.Data):
     def __init__(self):
-        self.data_path = 'data'
+        super().__init__()
         self.F = Feature()
-
-    def string2crf(self, string):
-        PER = 0
-        B = 0
-        string = string.strip()
-        sent = []
-        labels = []
-        for i in range(len(string)):
-            if '[' == string[i]:
-                PER = 1
-                B = 1
-                continue
-            if ']' == string[i]:
-                PER = 0
-                continue
-            if PER == 1:
-                if B == 1:
-                    if string[i+1] == ']':
-                        sent.append(string[i])
-                        labels.append('S-PER')
-                    else:
-                        sent.append(string[i])
-                        labels.append('B-PER')
-                    B = 0
-                elif string[i+1] == ']':
-                    sent.append(string[i])
-                    labels.append('E-PER')
-                else:
-                    sent.append(string[i])
-                    labels.append('I-PER')
-            else:
-                sent.append(string[i])
-                labels.append('O')
-        return self.F.sent2features(sent), labels
-
-    def load_data(self, data_path):
-        data = []
-        with open(data_path) as f:
-            for line in f:
-                data.append(self.string2crf(line))
-        return data
-
-class CRF():
-    def __init__(self):
-        pass
-
-    def train_model(self, train_data, model_path):
-        trainer = pycrfsuite.Trainer(verbose=False)
-        for xseq, yseq in train_data:
-            trainer.append(xseq, yseq)
-        trainer.set_params({
-            'c1': 1.0,
-            'c2': 1e-3,
-            'max_iterations': 50,
-            'feature.possible_transitions': True
-            })
-        trainer.params()
-        trainer.train(model_path)
-
-    def test_model(self, model_path, sent):
-        tagger = pycrfsuite.Tagger()
-        tagger.open(model_path)
-        labels = tagger.tag(sent)
-        return labels
 
 
 if __name__ == '__main__':
     d = Data()
-    data = d.load_data('data/train.txt')
-    crf = CRF()
+    data = d.load_data('data/train.txt', 'PER')
+    crf = base_crf.CRF()
     crf.train_model(data, 'test.model')
 
     while 1:
