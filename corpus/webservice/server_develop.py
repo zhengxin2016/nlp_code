@@ -8,6 +8,7 @@ from mongodb_client import Mongo
 from update_solr import Update
 from data_backup import Data_backup, DATA_PATH
 from restart_classify import restart_sys
+import automata 
 
 def count_data(db, collection, query):
     mongo = Mongo(db)
@@ -213,10 +214,18 @@ def cmd_3(cmd='', db='', collection=''):
     else:
         return {'result':'error'}
 
-@bottle.route('/:cmd/:db', method=['GET','POST'])
-def cmd_2(cmd='', db=''):
+@bottle.route('/:cmd/:scene', method=['GET','POST'])
+def cmd_2(cmd='', scene=''):
     if cmd in ['delete_db']:
-        return CMD[cmd](db+'_test')
+        return CMD[cmd](scene+'_test')
+    elif cmd == 'show_graph':
+        result = automata.show_graph(scene)
+        if result == 1:
+            return bottle.static_file(scene+'.png', '.')
+        elif result == 0:
+            return {'result':'scene_id error'}
+        else:
+            return {'result':scene+'config data error'}
     else:
         return {'result':'error'}
 
