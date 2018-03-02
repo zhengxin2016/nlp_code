@@ -4,6 +4,7 @@ import os
 import sys
 import bottle
 import json
+import traceback
 from mongodb_client import Mongo
 from update_solr import Update
 from data_backup import Data_backup, DATA_PATH
@@ -32,6 +33,7 @@ def load_label(db, collection, query):
     try:
         query = json.loads(query)
     except Exception:
+        traceback.print_exc()
         return {'result':'query format error'}
     if type(query) != dict:
         return {'result':'query format error'}
@@ -53,6 +55,7 @@ def load_data(db, collection, query):
     try:
         query = json.loads(query)
     except Exception:
+        traceback.print_exc()
         return {'result':'query format error'}
     if type(query) != dict:
         return {'result':'query format error'}
@@ -75,6 +78,7 @@ def store_data(db, collection, query):
     try:
         data = json.loads(data)
     except Exception:
+        traceback.print_exc()
         return {'result':'data format error'}
     if type(data) != dict:
         return {'result':'data format error'}
@@ -93,6 +97,7 @@ def search_data(db, collection, query):
     try:
         query = json.loads(query)
     except Exception:
+        traceback.print_exc()
         return {'result':'query format error'}
     if type(query) != dict:
         return {'result':'query format error'}
@@ -116,6 +121,7 @@ def commit(db, collection, query):
     try:
         data = json.loads(data)
     except Exception:
+        traceback.print_exc()
         return {'result':'data format error'}
     if type(data) != dict:
         return {'result':'data format error'}
@@ -165,6 +171,7 @@ def search(db, collection, query):
     try:
         query = json.loads(query)
     except Exception:
+        traceback.print_exc()
         return {'result':'query format error'}
     if type(query) != dict:
         return {'result':'query format error'}

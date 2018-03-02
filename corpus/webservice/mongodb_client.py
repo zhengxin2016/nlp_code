@@ -240,6 +240,7 @@ class Mongo():
                     todb=self.db_name, fromhost=fromhost)
             return 1
         except Exception:
+            traceback.print_exc()
             return 0
 
     def search(self, collection, raw_query):
@@ -267,7 +268,8 @@ class Mongo():
             else:
                 data = [pro(x) for x in self.db[collection].find(query)]
             return data
-        except Exception:
+        except:
+            traceback.print_exc()
             return None
 
     def search_new(self, raw_query):
