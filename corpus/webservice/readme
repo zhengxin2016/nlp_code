@@ -37,3 +37,17 @@ ip:port/delete_collection/db/collection
 
 =======================================
 ip:port/search_automata/db_name/collection/{"exact":{}, "regex":{}, "fields":[]}
+
+############### NEW API ###############
+ip:port/update_develop/db
+ip:port/update_master/db
+ip:port/restore/db/id
+ip:port/delete_db/db
+ip:port/delete_collection/db/collection
+ip:port/create/db/collection
+ip:port/search_edit/db_name/collection/{"exact":{}, "regex":{}, "fields":[]}
+ip:port/search_commit/db_name/collection/{"exact":{}, "regex":{}, "fields":[]}
+ip:port/store/db/collection
+    data = {"result":{"cmd":"create/update/delete", ...}}
+ip:port/commit/db/collection
+    data = {"result":{"cmd":"create/update/delete", "ids":[...]}}

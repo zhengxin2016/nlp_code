@@ -19,8 +19,8 @@ def update_master(db, log_id):
     backup = Data_backup(db)
     if not backup.data_dump(DATA_PATH, log_id):
         return {'result':'data dump error'}
-    if not restart_sys(db):
-        return {'result':'restart system error'}
+    #if not restart_sys(db):
+    #    return {'result':'restart system error'}
     return {'result':'ok'}
 
 def restore_master(db, log_id):

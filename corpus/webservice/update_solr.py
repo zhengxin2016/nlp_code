@@ -52,8 +52,8 @@ class Update():
             data_one['_id'] = str(data_one['_id'])
             data_one['scene'] = self.db_name
             data_one['topic'] = collection
-            if self.db_name == 'automata':
-                return insert_automata(data_one)
+            if collection in ['automata', 'instruction']:
+                return insert_automata(data_one, collection)
             if collection in ['refuse2chat', 'sentiment']:
                 self.solr.update_solr(data_one, self.core_name)
                 return None

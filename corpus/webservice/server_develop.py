@@ -99,7 +99,7 @@ def search_data(db, collection, query):
     if collection == 'dialogue':
         data = mongo.search_dialogue(query)
     else:
-        data = mongo.search(collection, query)
+        data = mongo.search_data(collection, query)
     result = json.dumps({'result':data}, ensure_ascii=False, sort_keys=True)
     result = result.encode('utf-8')
     return result
@@ -148,8 +148,8 @@ def update_develop(db, log_id):
     backup = Data_backup(db)
     if not backup.data_dump(DATA_PATH, log_id):
         return {'result':'data dump error'}
-    if not restart_sys(db):
-        return {'result':'restart system error'}
+    #if not restart_sys(db):
+    #    return {'result':'restart system error'}
     return {'result':'ok'}
 
 def restore_develop(db, log_id):
@@ -158,7 +158,7 @@ def restore_develop(db, log_id):
         return {'result':'error'}
     return {'result':'ok'}
 
-def search_automata(db, collection, query):
+def search(db, collection, query):
     mongo = Mongo(db)
     if type(query) == bytes:
         query = query.decode('utf-8')
@@ -168,7 +168,7 @@ def search_automata(db, collection, query):
         return {'result':'query format error'}
     if type(query) != dict:
         return {'result':'query format error'}
-    data = mongo.search_automata(collection, query)
+    data = mongo.search(collection, query)
     result = json.dumps({'result':data}, ensure_ascii=False, sort_keys=True)
     result = result.encode('utf-8')
     return result
@@ -185,7 +185,9 @@ CMD = {'count_data':count_data,
         'delete_collection':delete_collection,
         'update_develop':update_develop,
         'restore_develop':restore_develop,
-        'search_automata':search_automata,
+        'search_automata':search,
+        'search_edit':search,
+        'search_commit':search,
         }
 
 @bottle.route('/:mode/:cmd/:db/:collection/:query', methods=['GET', 'POST'])
@@ -201,6 +203,8 @@ def cmd_4(cmd='', db='', collection='', query=''):
     if cmd not in CMD.keys():
         return {'result':'cmd error'}
     #/search_automata/db_name/collection/{}
+    if cmd in ['search_commit']:
+        return CMD[cmd](db, collection, query)
     return CMD[cmd](db+'_test', collection, query)
 
 @bottle.route('/:cmd/:db/:collection', method=['GET','POST'])

@@ -185,7 +185,7 @@ class Mongo():
         except Exception:
             return 0
 
-    def search(self, collection, raw_query):
+    def search_data(self, collection, raw_query):
         try:
             def pro(x):
                 x['_id'] = str(x['_id'])
@@ -242,7 +242,7 @@ class Mongo():
         except Exception:
             return 0
 
-    def search_automata(self, collection, raw_query):
+    def search(self, collection, raw_query):
         try:
             def pro(x):
                 if '_id' in x:
@@ -257,12 +257,20 @@ class Mongo():
             if 'regex' in raw_query:
                 for key in raw_query['regex']:
                     query[key] = re.compile(raw_query['regex'][key])
-            data = [pro(x) for x in self.db[collection].find(query)]
+            if 'fields' in raw_query and raw_query['fields'] != []:
+                fields = {}
+                for key in raw_query['fields']:
+                    fields[key] = 1
+                if '_id' not in raw_query['fields']:
+                    fields['_id'] = 0
+                data = [pro(x) for x in self.db[collection].find(query, fields)]
+            else:
+                data = [pro(x) for x in self.db[collection].find(query)]
             return data
         except Exception:
             return None
 
-    def search_automata_new(self, raw_query):
+    def search_new(self, raw_query):
         '''
         {
         "collection":"instruction",
