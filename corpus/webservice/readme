@@ -51,3 +51,7 @@ ip:port/store/db/collection
     data = {"result":{"cmd":"create/update/delete", ...}}
 ip:port/commit/db/collection
     data = {"result":{"cmd":"create/update/delete", "ids":[...]}}
+ip:port/show_graph/scene
+ip:port/load_graph_config/scene
+ip:port/store_graph_config
+    data = {'scene_id':'xxxx', ...}

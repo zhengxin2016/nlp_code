@@ -180,6 +180,26 @@ def search(db, collection, query):
     result = result.encode('utf-8')
     return result
 
+def store_graph():
+    mongo = automata.Mongo_automata('127.0.0.1')
+    data = ''
+    for line in bottle.request.body.readlines():
+        if type(line) == bytes:
+            line = line.decode('utf8')
+        data += line
+    if data == '':
+        return {'result':'data null'}
+    try:
+        data = json.loads(data)
+    except Exception:
+        traceback.print_exc()
+        return {'result':'data format error'}
+    if type(data) != dict:
+        return {'result':'data format error'}
+    if not mongo.insert_graph_config(data):
+        return {'result':'error'}
+    return {'result':'ok'}
+
 CMD = {'count_data':count_data,
         'load_group':load_group,
         'load_label':load_label,
@@ -237,6 +257,25 @@ def cmd_2(cmd='', scene=''):
             return {'result':'scene_id error'}
         else:
             return {'result':scene+'config data error'}
+    elif cmd == 'load_graph_config':
+        try:
+            mongo = automata.Mongo_automata('127.0.0.1')
+            config = mongo.load_graph_config(scene_id=scene)
+            if not config:
+                return {'result':'scene_id error'}
+            result = json.dumps({'result':config}, ensure_ascii=False,
+                    sort_keys=True)
+            return result.encode('utf-8')
+        except:
+            traceback.print_exc()
+            return {'result':'error'}
+    else:
+        return {'result':'error'}
+
+@bottle.route('/:cmd', method=['GET','POST'])
+def cmd_2(cmd=''):
+    if cmd == 'store_graph_config':
+        return store_graph()
     else:
         return {'result':'error'}
 

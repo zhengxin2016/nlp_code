@@ -6,10 +6,10 @@ import json
 
 class WebHelper():
     def __init__(self):
-        self.url = "http://127.0.0.1:1234/"
+        self.url = "http://10.89.100.15:1234/"
 
     def get_send(self):
-        url = self.url+'count_data/suning_biu/qa/{}'
+        url = self.url+'''search_edit/bank/qa/{"regex":{"label":"=%3F"}}'''
         r = requests.get(url)
         print(r.text)
 
@@ -33,5 +33,5 @@ class WebHelper():
 if __name__ == '__main__':
     w = WebHelper()
     result = w.get_send()
-    result = w.post_send()
+    #result = w.post_send()
     

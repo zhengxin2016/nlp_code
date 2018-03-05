@@ -96,7 +96,7 @@ class Mongo_automata():
 
     def load_graph_config(self, scene_id):
         try:
-            result = self.collection.find_one({'scene_id':scene_id})
+            result = self.collection.find_one({'scene_id':scene_id}, {'_id':0})
             return result
         except:
             traceback.print_exc()
@@ -105,7 +105,8 @@ class Mongo_automata():
     def insert_graph_config(self, data):
         try:
             if self.collection.find_one({'scene_id':data['scene_id']}):
-                return 0
+                self.collection.delete_many({'scene_id':data['scene_id']})
+                #return 0
             self.collection.insert(data)
             return 1
         except:
