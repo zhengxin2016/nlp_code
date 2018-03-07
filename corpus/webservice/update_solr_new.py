@@ -75,7 +75,10 @@ class Update():
 
     def update(self):
         try:
-            for collection in self.db.collection_names():
+            collections = self.db.collection_names()
+            if 'log' in collections:
+                collections.remove('log')
+            for collection in collections:
                 print('start '+collection)
                 self.update_data(collection)
         except Exception:
