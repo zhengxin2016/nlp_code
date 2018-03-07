@@ -11,7 +11,7 @@ from restart_classify import restart_sys
 
 def update_master(db, log_id):
     mongo = Mongo(db)
-    if not mongo.copydb('10.89.14.67'):
+    if not mongo.copydb('10.89.100.14'):
         return {'result':'copydb error'}
     up = Update('127.0.0.1', db)
     if not up.update('master'):
