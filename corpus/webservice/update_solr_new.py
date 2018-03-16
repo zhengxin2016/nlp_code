@@ -24,17 +24,6 @@ class Update():
         self.solr_url = 'http://127.0.0.1:8999/solr'
         self.solr = SOLR(self.solr_url)
 
-    def load_log(self, server_name):
-        #_id, collection, cmd, ids, comment, status, time
-        if server_name == 'develop':
-            query = {'status':'0'}
-        elif server_name == 'master':
-            query = {'status':'1'}
-        else:
-            query = {'status':'3'}
-        logs = [x for x in self.db.log.find(query).sort('time')]
-        return logs
-
     def check_solr_core(self):
         if not self.solr.solr_core_exists(self.core_name):
             self.solr.create_solr_core(self.core_name)
