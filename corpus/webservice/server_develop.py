@@ -192,7 +192,7 @@ def load_graph(scene):
         nodes = list(map(lambda x:x['instruction'], nodes))
         edges = list(map(lambda x:x['intent'], edges))
 
-        result = json.dumps({'config':config, 'intruction':nodes,
+        result = json.dumps({'config':config, 'instruction':nodes,
             'automata':edges}, ensure_ascii=False, sort_keys=True)
         result = result.encode('utf-8')
         return result
@@ -219,11 +219,11 @@ def store_graph(scene):
         return {'result':'data format error : not dict'}
     try:
         if not mongo_automata.insert_graph_config(data['config']):
-            return {'result':'error'}
+            return {'result':'update config error'}
         if not mongo.store('instruction', data['instruction']):
-            return {'result':'error'}
+            return {'result':'update instruction error'}
         if not mongo.store('automata', data['automata']):
-            return {'result':'error'}
+            return {'result':'update automata error'}
     except:
         traceback.print_exc()
         return {'result':'error'}
