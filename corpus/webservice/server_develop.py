@@ -34,9 +34,9 @@ def load_label(db, collection, query):
         query = json.loads(query)
     except Exception:
         traceback.print_exc()
-        return {'result':'query format error'}
+        return {'result':'query format error : not json'}
     if type(query) != dict:
-        return {'result':'query format error'}
+        return {'result':'query format error : not dict'}
     if 'group' in query.keys():
         group = query['group']
     else:
@@ -56,9 +56,9 @@ def load_data(db, collection, query):
         query = json.loads(query)
     except Exception:
         traceback.print_exc()
-        return {'result':'query format error'}
+        return {'result':'query format error : not json'}
     if type(query) != dict:
-        return {'result':'query format error'}
+        return {'result':'query format error : not dict'}
     if collection == 'dialogue':
         data = mongo.load_dialogue_data(query)
     else:
@@ -79,9 +79,9 @@ def store_data(db, collection, query):
         data = json.loads(data)
     except Exception:
         traceback.print_exc()
-        return {'result':'data format error'}
+        return {'result':'data format error : not json'}
     if type(data) != dict:
-        return {'result':'data format error'}
+        return {'result':'data format error : not dict'}
     if collection == 'dialogue':
         result = mongo.store_dialogue(data)
     else:
@@ -98,9 +98,9 @@ def search_data(db, collection, query):
         query = json.loads(query)
     except Exception:
         traceback.print_exc()
-        return {'result':'query format error'}
+        return {'result':'query format error : not json'}
     if type(query) != dict:
-        return {'result':'query format error'}
+        return {'result':'query format error : not dict'}
     if collection == 'dialogue':
         data = mongo.search_dialogue(query)
     else:
@@ -122,9 +122,9 @@ def commit(db, collection, query):
         data = json.loads(data)
     except Exception:
         traceback.print_exc()
-        return {'result':'data format error'}
+        return {'result':'data format error : not json'}
     if type(data) != dict:
-        return {'result':'data format error'}
+        return {'result':'data format error : not dict'}
     if not mongo.commit(collection, data):
         return {'result':'xxerror'} 
     return {'result':'ok'}
@@ -193,9 +193,9 @@ def store_graph():
         data = json.loads(data)
     except Exception:
         traceback.print_exc()
-        return {'result':'data format error'}
+        return {'result':'data format error : not json'}
     if type(data) != dict:
-        return {'result':'data format error'}
+        return {'result':'data format error : not dict'}
     if not mongo.insert_graph_config(data):
         return {'result':'error'}
     return {'result':'ok'}
@@ -273,7 +273,7 @@ def cmd_2(cmd='', scene=''):
         return {'result':'error'}
 
 @bottle.route('/:cmd', method=['GET','POST'])
-def cmd_2(cmd=''):
+def cmd_1(cmd=''):
     if cmd == 'store_graph_config':
         return store_graph()
     else:
