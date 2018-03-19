@@ -182,8 +182,8 @@ def search(db, collection, query):
 
 def load_graph(scene):
     try:
-        mongo = Mongo(scene)
-        mongo_automata = automata.Mongo_automata('127.0.0.1')
+        mongo = Mongo(scene+'_test')
+        mongo_automata = automata.Mongo_automata('127.0.0.1', 'automata_test')
         config = mongo_automata.load_graph_config(scene_id=scene)
         if not config:
             return {'result':'scene_id error'}
@@ -201,8 +201,8 @@ def load_graph(scene):
         return {'result':'error'}
 
 def store_graph(scene):
-    mongo = Mongo(scene)
-    mongo_automata = automata.Mongo_automata('127.0.0.1')
+    mongo = Mongo(scene+'_test')
+    mongo_automata = automata.Mongo_automata('127.0.0.1', 'automata_test')
     data = ''
     for line in bottle.request.body.readlines():
         if type(line) == bytes:
@@ -228,6 +228,18 @@ def store_graph(scene):
         traceback.print_exc()
         return {'result':'error'}
     return {'result':'ok'}
+
+def commit_graph_config(scene):
+    try:
+        mongo_test = automata.Mongo_automata(db_name='automata_test')
+        mongo = automata.Mongo_automata(db_name='automata')
+        data = mongo_test.load_graph_config(scene)
+        if not mongo.insert_graph_config(data):
+            return {'result':'commit error'}
+        return {'result':'ok'}
+    except:
+        traceback.print_exc()
+        return {'result':'error'}
 
 CMD = {'count_data':count_data,
         'load_group':load_group,
@@ -288,7 +300,7 @@ def cmd_2(cmd='', scene=''):
             return {'result':scene+'config data error'}
     elif cmd == 'load_graph_config':
         try:
-            mongo = automata.Mongo_automata('127.0.0.1')
+            mongo = automata.Mongo_automata('127.0.0.1', 'automata_test')
             config = mongo.load_graph_config(scene_id=scene)
             if not config:
                 return {'result':'scene_id error'}
@@ -302,6 +314,8 @@ def cmd_2(cmd='', scene=''):
         return load_graph(scene)
     elif cmd == 'store_graph':
         return store_graph(scene)
+    elif cmd == 'commit_graph_config':
+        return commit_graph_config(scene)
     else:
         return {'result':'error'}
 

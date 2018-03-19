@@ -89,8 +89,8 @@ class Automata(Machine):
 
 
 class Mongo_automata():
-    def __init__(self, ip='127.0.0.1'):
-        self.db_name = 'automata'
+    def __init__(self, ip='127.0.0.1', db_name='automata'):
+        self.db_name = db_name
         self.db = MongoClient(ip, 27017)[self.db_name]
         self.collection = self.db['machines']
 
@@ -132,7 +132,7 @@ class Mongo_automata():
 
 def show_graph(scene_id):
     try:
-        mongo = Mongo_automata('127.0.0.1')
+        mongo = Mongo_automata('127.0.0.1', 'automata')
         config = mongo.load_graph_config(scene_id=scene_id)
         if not config:
             return 0
