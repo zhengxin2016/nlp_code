@@ -83,9 +83,9 @@ def store_data(db, collection, query):
     if type(data) != dict:
         return {'result':'data format error : not dict'}
     if collection == 'dialogue':
-        result = mongo.store_dialogue(data)
+        result = mongo.store_dialogue(data['result'])
     else:
-        result = mongo.store(collection, data)
+        result = mongo.store(collection, data['result'])
     if not result:
         return {'result':'error'}
     return {'result':'ok'}
@@ -170,7 +170,7 @@ def search(db, collection, query):
         query = query.decode('utf-8')
     try:
         query = json.loads(query)
-    except Exception:
+    except:
         traceback.print_exc()
         return {'result':'query format error'}
     if type(query) != dict:
@@ -180,8 +180,29 @@ def search(db, collection, query):
     result = result.encode('utf-8')
     return result
 
-def store_graph():
-    mongo = automata.Mongo_automata('127.0.0.1')
+def load_graph(scene):
+    try:
+        mongo = Mongo(scene)
+        mongo_automata = automata.Mongo_automata('127.0.0.1')
+        config = mongo_automata.load_graph_config(scene_id=scene)
+        if not config:
+            return {'result':'scene_id error'}
+        nodes = mongo.search('instruction', {'fields':['instruction']})
+        edges = mongo.search('automata', {'fields':['intent']})
+        nodes = list(map(lambda x:x['instruction'], nodes))
+        edges = list(map(lambda x:x['intent'], edges))
+
+        result = json.dumps({'config':config, 'intruction':nodes,
+            'automata':edges}, ensure_ascii=False, sort_keys=True)
+        result = result.encode('utf-8')
+        return result
+    except:
+        traceback.print_exc()
+        return {'result':'error'}
+
+def store_graph(scene):
+    mongo = Mongo(scene)
+    mongo_automata = automata.Mongo_automata('127.0.0.1')
     data = ''
     for line in bottle.request.body.readlines():
         if type(line) == bytes:
@@ -191,12 +212,20 @@ def store_graph():
         return {'result':'data null'}
     try:
         data = json.loads(data)
-    except Exception:
+    except:
         traceback.print_exc()
         return {'result':'data format error : not json'}
     if type(data) != dict:
         return {'result':'data format error : not dict'}
-    if not mongo.insert_graph_config(data):
+    try:
+        if not mongo_automata.insert_graph_config(data['config']):
+            return {'result':'error'}
+        if not mongo.store('instruction', data['instruction']):
+            return {'result':'error'}
+        if not mongo.store('automata', data['automata']):
+            return {'result':'error'}
+    except:
+        traceback.print_exc()
         return {'result':'error'}
     return {'result':'ok'}
 
@@ -269,13 +298,18 @@ def cmd_2(cmd='', scene=''):
         except:
             traceback.print_exc()
             return {'result':'error'}
+    elif cmd == 'load_graph':
+        return load_graph(scene)
+    elif cmd == 'store_graph':
+        return store_graph(scene)
     else:
         return {'result':'error'}
 
 @bottle.route('/:cmd', method=['GET','POST'])
 def cmd_1(cmd=''):
     if cmd == 'store_graph_config':
-        return store_graph()
+        #return store_graph()
+        return {'result':'not used'}
     else:
         return {'result':'error'}
 

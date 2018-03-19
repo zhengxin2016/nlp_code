@@ -87,7 +87,7 @@ class Mongo():
 
     def store_dialogue(self, data):
         try:
-            for x in data['result']:
+            for x in data:
                 if x['cmd'] == 'create':
                     x.pop('_id')
                     x.pop('cmd')
@@ -164,7 +164,7 @@ class Mongo():
 
     def store(self, collection, data):
         try:
-            for x in data['result']:
+            for x in data:
                 if x['cmd'] == 'create':
                     x.pop('cmd')
                     x.pop('_id')
