@@ -188,9 +188,9 @@ def load_graph(scene):
         if not config:
             return {'result':'scene_id error'}
         nodes = mongo.search('instruction', {'fields':['instruction', '_id']})
-        edges = mongo.search('automata', {'fields':['intent']})
+        edges = mongo.search('automata', {'fields':['intent', '_id']})
         #nodes = list(map(lambda x:x['instruction'], nodes))
-        edges = list(map(lambda x:x['intent'], edges))
+        #edges = list(map(lambda x:x['intent'], edges))
 
         result = json.dumps({'config':config, 'instruction':nodes,
             'automata':edges}, ensure_ascii=False, sort_keys=True)
