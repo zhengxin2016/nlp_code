@@ -90,6 +90,8 @@ class Mongo():
             for x in data:
                 if x['cmd'] == 'create':
                     x.pop('_id')
+                    #if '_id' in x:
+                    #    x['_id'] = ObjectId(x['_id'])
                     x.pop('cmd')
                     self.db.dialogue.insert(x)
                 elif x['cmd'] == 'delete':
@@ -168,6 +170,8 @@ class Mongo():
                 if x['cmd'] == 'create':
                     x.pop('cmd')
                     x.pop('_id')
+                    #if '_id' in x:
+                    #    x['_id'] = ObjectId(x['_id'])
                     self.db[collection].insert(x)
                 elif x['cmd'] == 'delete':
                     if '_id' in x:
