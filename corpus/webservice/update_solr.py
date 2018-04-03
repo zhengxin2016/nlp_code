@@ -70,6 +70,7 @@ class Update():
             for collection in collections:
                 print('start '+collection)
                 self.update_data(collection)
+            return 1
         except Exception:
             traceback.print_exc()
             return 0
