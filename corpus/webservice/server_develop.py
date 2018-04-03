@@ -149,7 +149,7 @@ def delete_collection(db, collection):
 
 def update_develop(db, log_id):
     up = Update('127.0.0.1', db)
-    if not up.update('develop'):
+    if not up.update():
         return {'result':'update data error'}
     backup = Data_backup(db)
     if not backup.data_dump(DATA_PATH, log_id):

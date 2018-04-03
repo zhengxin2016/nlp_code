@@ -202,12 +202,6 @@ class Mongo():
         except Exception:
             return None
 
-    def commit_log(self, collection, log):
-        log['collection'] = collection
-        log['status'] = '0'
-        log['time'] = utils.get_current_time()
-        self.commit_db['log'].insert(log)
-
     def commit(self, collection, data):
         try:
             cmd = data['result']['cmd']
@@ -231,7 +225,6 @@ class Mongo():
                     self.commit_db[collection].delete_one({'_id':_id_o})
             else:
                 return 0
-            self.commit_log(collection, data['result'])
             return 1
         except Exception:
             traceback.print_exc()

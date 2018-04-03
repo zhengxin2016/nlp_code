@@ -62,7 +62,7 @@ class Update():
         for d in data:
             insert(d)
 
-    def update(self, server_name):
+    def update(self):
         try:
             collections = self.db.collection_names()
             if 'log' in collections:
