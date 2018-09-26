@@ -10,12 +10,20 @@ vi ~/.bash_profile
 ```
 
 创建虚拟环境：mkvirtualenv [虚拟环境名称]
+
 列出虚拟环境：lsvirtualenv
+
 切换虚拟环境：workon [虚拟环境名称]
+
 deactivate: 退出终端环境
 
+
 rmvirtualenv ENV：删除运行环境ENV
+
 mkproject mic：创建mic项目和运行环境mic
+
 mktmpenv：创建临时运行环境
+
 lssitepackages: 列出当前环境安装了的包
+
 lsvirtualenv: 列出可用的运行环境
